@@ -13,6 +13,8 @@ const EducationalDetailsForm = () => {
     Board: "",
   });
 
+  const [dataExist, setDataExist] = useState(false);
+
   const [boards, setBoards] = useState([]);
   const [errors, setErrors] = useState({});
   const [submitMessage, setSubmitMessage] = useState("");
@@ -27,6 +29,10 @@ const EducationalDetailsForm = () => {
           axios.get("/form/educationalDetails/getForm"),
         ]);
         
+        console.log("formDataResponse", formDataResponse.data);
+        if(formDataResponse.data.length != 0){
+          setDataExist(true);
+        }
         setBoards(boardsResponse.data);
 
         if (formDataResponse.data[0]) {
@@ -83,8 +89,8 @@ const EducationalDetailsForm = () => {
     e.preventDefault();
     if (validateForm()) {
       try {
-        const apiUrl = formData.LastSchoolName ? "/form/educationalDetails/updateForm" : "/form/educationalDetails/addForm";
-        const method = formData.LastSchoolName ? axios.patch : axios.post;
+        const apiUrl = dataExist ? "/form/educationalDetails/updateForm" : "/form/educationalDetails/addForm";
+        const method = dataExist ? axios.patch : axios.post;
         await method(apiUrl, formData);
         setSubmitMessage("Form submitted successfully!");
         navigate("/familyDetailsForm");

@@ -5,7 +5,7 @@ import { useAuth } from "../../../context/AuthContext";
 
 export default function LoginRight() {
   const navigate = useNavigate();
-  const {login} = useAuth();
+  const { login } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -17,19 +17,19 @@ export default function LoginRight() {
   });
   const [submitMessage, setSubmitMessage] = useState("");
 
-
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    setErrors((prevErrors) => ({ ...prevErrors, [name]: value ? "" : `${name} is required` }));
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: value ? "" : `${name} is required`,
+    }));
   };
 
   const validateForm = () => {
     const formErrors = {};
     let isValid = true;
 
-    // Check if both email and password are provided
     if (!formData.email) {
       formErrors.email = "Email is required";
       isValid = false;
@@ -40,7 +40,6 @@ export default function LoginRight() {
       isValid = false;
     }
 
-    // Email validation
     if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       formErrors.email = "Email must be a valid email address";
       isValid = false;
@@ -58,7 +57,7 @@ export default function LoginRight() {
         setSubmitMessage("Login successful!");
         login();
         localStorage.setItem("token", response.data.token);
-        navigate("/dashboard"); // Redirect to dashboard after successful login
+        navigate("/dashboard");
       } catch (error) {
         setSubmitMessage("Error logging in");
         console.error("Error logging in", error);
@@ -67,10 +66,16 @@ export default function LoginRight() {
   };
 
   return (
-    <form className="flex flex-col gap-6 w-full max-w-lg mx-auto p-6 bg-white shadow-lg rounded-lg justify-center" onSubmit={onSubmit}>
+    <form
+      className="flex flex-col gap-6 w-full max-w-lg mx-auto p-6 bg-white shadow-lg rounded-lg justify-center border border-gray-200"
+      onSubmit={onSubmit}
+    >
+      <h2 className="text-2xl font-semibold text-center text-gray-800">Login</h2>
 
       <div className="flex flex-col items-start">
-        <label htmlFor="email" className="text-gray-600">Email</label>
+        <label htmlFor="email" className="text-gray-600">
+          Email
+        </label>
         <input
           type="email"
           id="email"
@@ -84,7 +89,9 @@ export default function LoginRight() {
       </div>
 
       <div className="flex flex-col items-start">
-        <label htmlFor="password" className="text-gray-600">Password</label>
+        <label htmlFor="password" className="text-gray-600">
+          Password
+        </label>
         <input
           type="password"
           id="password"
@@ -94,11 +101,19 @@ export default function LoginRight() {
           placeholder="Enter Password"
           className="border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
         />
-        {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
+        {errors.password && (
+          <p className="text-red-500 text-sm">{errors.password}</p>
+        )}
       </div>
 
       {submitMessage && (
-        <p className={`text-center text-sm ${submitMessage.includes("successful") ? "text-green-500" : "text-red-500"}`}>
+        <p
+          className={`text-center text-sm ${
+            submitMessage.includes("successful")
+              ? "text-green-500"
+              : "text-red-500"
+          }`}
+        >
           {submitMessage}
         </p>
       )}
@@ -109,6 +124,18 @@ export default function LoginRight() {
       >
         Login
       </button>
+
+      <div className="text-center mt-4">
+        <p className="text-sm text-gray-600">
+          Don't have an account?{" "}
+          <button
+            className="text-blue-500 font-medium hover:underline"
+            onClick={() => navigate("/signup")}
+          >
+            Sign up here
+          </button>
+        </p>
+      </div>
     </form>
   );
 }

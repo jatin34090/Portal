@@ -47,7 +47,7 @@ const BasicDetailsForm = () => {
     let isValid = true;
 
     Object.keys(formData).forEach((key) => {
-      if (!formData[key].trim() && key !== "admitCard") {
+      if (!formData[key].trim()) {
         formErrors[key] = `${key.replace(/([A-Z])/g, " $1")} is required`;
         isValid = false;
       }
@@ -82,14 +82,6 @@ const BasicDetailsForm = () => {
     }
   };
 
-  // Function to format date to YYYY-MM-DD
-  const formatDate = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    console.log("date", date.toISOString());
-    return date.toISOString().split("T")[0]; // Extracts YYYY-MM-DD
-  };
-
   // Fetch form data on component mount
   useEffect(() => {
     const fetchBasicDetails = async () => {
@@ -97,13 +89,11 @@ const BasicDetailsForm = () => {
         const response = await axios.get("/form/basicDetails/getForm");
         const data = response.data;
 
-        console.log("Fetched Data:", data);
-
         setFormData({
-          dob: formatDate(data[0]?.dob),  // Format dob
+          dob: data[0]?.dob || "",
           gender: data[0]?.gender || "",
           examName: data[0]?.examName || "",
-          examDate: formatDate(data[0]?.examDate),  // Format examDate
+          examDate: data[0]?.examDate || "",
         });
       } catch (error) {
         console.error("Error fetching form data:", error);
@@ -134,7 +124,7 @@ const BasicDetailsForm = () => {
                 type="date"
                 id={key}
                 name={key}
-                value={formData[key]} // Bind to formData.dob
+                value={formData[key]}
                 onChange={handleChange}
                 className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
               />
@@ -162,6 +152,19 @@ const BasicDetailsForm = () => {
                 <option value="">Select Exam Name</option>
                 <option value="S.Dat">S.Dat</option>
                 <option value="Rise">Rise</option>
+              </select>
+            ) : key === "examDate" ? (
+              <select
+                id={key}
+                name={key}
+                value={formData[key]}
+                onChange={handleChange}
+                className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+              >
+                <option value="">Select Exam Date</option>
+                <option value="2024-01-15">January 15, 2024</option>
+                <option value="2024-02-20">February 20, 2024</option>
+                <option value="2024-03-10">March 10, 2024</option>
               </select>
             ) : (
               <input

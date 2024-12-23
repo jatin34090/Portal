@@ -5,7 +5,7 @@ import axios from 'axios';
 // Create an Axios instance with default configurations
 const instance = axios.create({
 
-   baseURL: `${import.meta.env.VITE_APP_API_URL}/api/v1`, // Replace with your actual backend URL
+   baseURL: `${import.meta.env.VITE_APP_API_URL}/api`, // Replace with your actual backend URL
   // // Replace with your actual backend URL
   // baseURL: "http://localhost:5000/api", // Replace with your actual backend URL
   // baseURL: /api/v1, // Replace with your actual backend URL

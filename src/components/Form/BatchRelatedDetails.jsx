@@ -10,6 +10,7 @@ const BatchRelatedDetailsForm = () => {
     subject_combination: "",
     session_start_date: "",
   });
+  const [dataExist, setDataExist] = useState(false);
 
   const [errors, setErrors] = useState({});
   const [submitMessage, setSubmitMessage] = useState("");
@@ -25,6 +26,12 @@ const BatchRelatedDetailsForm = () => {
       try {
         const response = await axios.get("/form/batchRelatedDetails/getForm");
         const data = response.data;
+        console.log("data", data);
+        console.log("data.length", data.length);
+        if(data.length != 0){
+
+          setDataExist(true);
+        }
 
         if (data.length > 0) {
           const sessionYear = new Date(data[0].session_start_date).getFullYear().toString();
@@ -73,8 +80,10 @@ const BatchRelatedDetailsForm = () => {
     e.preventDefault();
     if (validateForm()) {
       try {
-        const url = formData.preferred_batch ? "/form/batchRelatedDetails/updateForm" : "/form/batchRelatedDetails/addForm";
-        const method = formData.preferred_batch ? axios.patch : axios.post;
+        console.log("dataExist", dataExist);
+        const url = dataExist ? "/form/batchRelatedDetails/updateForm" : "/form/batchRelatedDetails/addForm";
+        console .log("url", url);
+        const method =dataExist ? axios.patch : axios.post;
         
         const response = await method(url, formData);
         setSubmitMessage(formData.preferred_batch ? "Batch related details updated successfully!" : "Batch related details submitted successfully!");

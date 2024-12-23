@@ -13,8 +13,12 @@ import Signup from "./components/LoginSugnup/Signup";
 import ExamDetails from "./components/ExamDetails";
 import ShowMessage from "./components/ShowMessage";
 import Dashboard from "./components/Dashboard";
+import { Provider } from 'react-redux';
+import store from './redux/store';
+
 function App() {
   return (
+    <Provider store={store}>
     <AuthProvider>
 
     <Router>
@@ -29,11 +33,13 @@ function App() {
          <Route path="/dashboard" element={<PrivateRoute component={Dashboard} />} />
           <Route path=  "/examDetails" element={<ExamDetails />} />
           <Route path=  "/showMessage" element={<ShowMessage />} />
+          {/* <Route path = "/formDetailsPage" element={<FormDetailPage />}/> */}
          {/* <Route path = "/dashboard" element={<Dashboard />} /> */}
         </Routes>
       </div>
     </Router>
     </AuthProvider>
+    </Provider>
   );
 }
 

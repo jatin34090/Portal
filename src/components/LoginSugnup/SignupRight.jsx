@@ -1,14 +1,14 @@
 import { useState } from "react";
 import axios from "../../api/axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function SignupRight() {
   const navigate = useNavigate();
-  
+
   // Regex pattern for phone number validation (+91 followed by 10 digits)
   const phoneRegex = /^\+91[0-9]{10}$/;
-  
-  // State hooks for form data, error messages, code box visibility, and submission message
+
+  // State hooks
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -25,19 +25,17 @@ export default function SignupRight() {
   const [showCodeBox, setShowCodeBox] = useState(false);
   const [submitMessage, setSubmitMessage] = useState("");
 
-  // Handle form input changes and validation
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
     setErrors((prevErrors) => ({ ...prevErrors, [name]: value ? "" : `${name} is required` }));
   };
 
-  // Validate form data before submission
   const validateForm = () => {
     const formErrors = {};
     let isValid = true;
 
-    // Check if any field is empty
+    // Field validation
     ["name", "email", "phone", "password"].forEach((field) => {
       if (!formData[field]) {
         formErrors[field] = `${field} is required`;
@@ -45,15 +43,13 @@ export default function SignupRight() {
       }
     });
 
-    // Validate email format
     if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      formErrors.email = "Email must be a valid email address";
+      formErrors.email = "Email must be valid";
       isValid = false;
     }
 
-    // Validate phone number format
     if (!phoneRegex.test(`+91${formData.phone}`)) {
-      formErrors.phone = "Phone number must be a valid 10-digit number";
+      formErrors.phone = "Phone must be a valid 10-digit number";
       isValid = false;
     }
 
@@ -61,10 +57,9 @@ export default function SignupRight() {
     return isValid;
   };
 
-  // Submit form data
   const onSubmit = async (e) => {
     e.preventDefault();
-    setSubmitMessage(""); // Reset submit message on new submit attempt
+    setSubmitMessage("");
 
     if (validateForm()) {
       try {
@@ -79,7 +74,6 @@ export default function SignupRight() {
     }
   };
 
-  // Send phone verification code
   const verifyPhoneNo = async () => {
     try {
       const response = await axios.post("/students/sendVerification", {
@@ -93,7 +87,6 @@ export default function SignupRight() {
     }
   };
 
-  // Check verification code
   const checkVerificationCode = async () => {
     try {
       const response = await axios.post("/students/verifyNumber", {
@@ -109,115 +102,142 @@ export default function SignupRight() {
   };
 
   return (
-    <form className="flex flex-col gap-6 w-full mx-auto p-6 bg-white shadow-lg rounded-lg" onSubmit={onSubmit}>
+    <div className="flex items-center justify-center  bg-gradient-to-r from-blue-50 to-indigo-100">
+      <form
+        className="w-full max-w-lg bg-white shadow-lg rounded-lg p-6 space-y-6"
+        onSubmit={onSubmit}
+      >
+        <h1 className="text-2xl font-bold text-center text-indigo-600">
+          Create Your Account
+        </h1>
 
-      {/* Name Field */}
-      <div className="flex flex-col items-start">
-        <label htmlFor="name" className="text-gray-600">Name</label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          placeholder="Enter Your Name"
-          className="border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
-        />
-        {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
-      </div>
-
-      {/* Email Field */}
-      <div className="flex flex-col items-start">
-        <label htmlFor="email" className="text-gray-600">Email</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          placeholder="Enter Your Email"
-          className="border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
-        />
-        {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
-      </div>
-
-      {/* Phone Field */}
-      <div className="flex gap-4 items-center">
-        <div className="flex flex-col flex-1 items-start">
-          <label htmlFor="phone" className="text-gray-600">Phone</label>
+        {/* Name Field */}
+        <div className="flex flex-col">
+          <label htmlFor="name" className="text-sm font-medium text-gray-600 mb-1">
+            Name
+          </label>
           <input
-            type="tel"
-            id="phone"
-            name="phone"
-            value={formData.phone}
+            type="text"
+            id="name"
+            name="name"
+            value={formData.name}
             onChange={handleChange}
-            placeholder="Enter Your Phone No."
-            className="border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
+            placeholder="Enter your name"
+            className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
           />
-          {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
+          {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
         </div>
-        <div className="mt-6">
-          {showCodeBox ? (
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                id="code"
-                name="code"
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                placeholder="Enter Code"
-                className="border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
+
+        {/* Email Field */}
+        <div className="flex flex-col">
+          <label htmlFor="email" className="text-sm font-medium text-gray-600 mb-1">
+            Email
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="Enter your email"
+            className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+          />
+          {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+        </div>
+
+        {/* Phone Field */}
+        <div className="flex gap-4 items-start">
+          <div className="flex-1 flex flex-col">
+            <label htmlFor="phone" className="text-sm font-medium text-gray-600 mb-1">
+              Phone
+            </label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder="Enter your phone number"
+              className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+            />
+            {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+          </div>
+          <div className="mt-6">
+            {showCodeBox ? (
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  id="code"
+                  name="code"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                  placeholder="Enter code"
+                  className="border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+                <button
+                  type="button"
+                  onClick={checkVerificationCode}
+                  className="px-4 py-2 text-white bg-green-500 hover:bg-green-600 rounded-md"
+                >
+                  Verify
+                </button>
+              </div>
+            ) : (
               <button
                 type="button"
-                onClick={checkVerificationCode}
-                className="px-4 py-2 text-white bg-green-500 hover:bg-green-600 rounded-md"
+                onClick={verifyPhoneNo}
+                className="px-4 py-2 text-white bg-blue-500 hover:bg-blue-600 rounded-md"
               >
-                Verify Code
+                Send Code
               </button>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={verifyPhoneNo}
-              className="px-4 py-2 text-white bg-blue-500 hover:bg-blue-600 rounded-md"
-            >
-              Verify
-            </button>
-          )}
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* Password Field */}
-      <div className="flex flex-col items-start">
-        <label htmlFor="password" className="text-gray-600">Password</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          placeholder="Enter Password"
-          className="border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
-        />
-        {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
-      </div>
+        {/* Password Field */}
+        <div className="flex flex-col">
+          <label htmlFor="password" className="text-sm font-medium text-gray-600 mb-1">
+            Password
+          </label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            placeholder="Enter your password"
+            className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+          />
+          {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+        </div>
 
-      {/* Submit Message */}
-      {submitMessage && (
-        <p className={`text-center text-sm ${submitMessage.includes("successfully") ? "text-green-500" : "text-red-500"}`}>
-          {submitMessage}
+        {/* Submit Message */}
+        {submitMessage && (
+          <p
+            className={`text-sm text-center mt-4 ${
+              submitMessage.includes("successfully") ? "text-green-500" : "text-red-500"
+            }`}
+          >
+            {submitMessage}
+          </p>
+        )}
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200"
+        >
+          Sign Up
+        </button>
+
+        {/* Login Link */}
+        <p className="text-sm text-gray-600 text-center mt-4">
+          Already have an account?{" "}
+          <Link to="/" className="text-indigo-500 hover:underline">
+            Log in
+          </Link>
         </p>
-      )}
-
-      {/* Submit Button */}
-      <button
-        type="submit"
-        className="w-full py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all"
-      >
-        Submit
-      </button>
-    </form>
+      </form>
+    </div>
   );
 }
-

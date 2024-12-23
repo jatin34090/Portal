@@ -1,46 +1,49 @@
 // src/pages/Dashboard.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+
 import axios from '../api/axios';
-// import { useAuth } from '../../context/AuthContext';  // Assuming you're using AuthContext
+import FormDetailPage from './FormDetailPage';
+import { fetchFamilyDetails, updateFamilyDetails } from '../redux/slices/familyDetailsSlice';
 
 
 const Dashboard = () => {
-  // const { isAuthenticated, userRole } = useAuth();  // Get authentication and role status
+ 
   const navigate = useNavigate();
+  const [formShow, setFormShow] = useState(false);
 
-  // Simulate user details and status data (this would come from an API in a real app)
-  const [paymentStatus, setPaymentStatus] = useState('Pending'); // Example status
-  const [admitCardStatus, setAdmitCardStatus] = useState('Not Issued');
+  // State to store user details and statuses
   const [userDetails, setUserDetails] = useState({
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    phone: '123-456-7890',
+    name: '',
+    email: '',
+    phone: '',
+    address: '',
+    dob: '',
+    gender: '',
+    paymentStatus: 'Pending',
+    admitCardStatus: 'Not Issued',
   });
   const [editing, setEditing] = useState(false);
   const [updatedDetails, setUpdatedDetails] = useState({ ...userDetails });
+  const [loading, setLoading] = useState(true);
 
-  const fetchBasicDetails = async () =>{
-    try{
-      const response = await axios.get("/students/getStudentsById");
-        console.log(response);
-      
-    }catch(error){
-      console.error("Error fetching form data:", error);
+  // Fetch user details from API
+  const fetchUserDetails = async () => {
+    try {
+      const response = await axios.get('/students/getStudentsById');
+      setUserDetails(response.data);
+      setUpdatedDetails(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching user details:', error);
+      setLoading(false);
     }
-  }
+  };
 
-
-
-  useEffect(()=>{
-    fetchBasicDetails();
-  })
-  // useEffect(() => {
-  //   if (!isAuthenticated) {
-  //     navigate('/login'); // Redirect to login page if not authenticated
-  //   }
-  //   // Fetch user data and payment/admit card status from the backend here
-  // }, [isAuthenticated, navigate]);
+  useEffect(() => {
+    fetchUserDetails();
+  }, []);
 
   const handleEditChange = (e) => {
     const { name, value } = e.target;
@@ -50,15 +53,29 @@ const Dashboard = () => {
     });
   };
 
-  const handleUpdateDetails = () => {
-    // Update user details with API call here
-    setUserDetails({ ...updatedDetails });
-    setEditing(false);
+  const handleUpdateDetails = async () => {
+    try {
+      const response = await axios.patch('/students/editStudent', updatedDetails);
+      setUserDetails({ ...updatedDetails });
+      setEditing(false);
+      console.log('Details updated successfully:', response.data);
+    } catch (error) {
+      console.error('Error updating user details:', error);
+    }
   };
 
   const toggleEditing = () => {
     setEditing(!editing);
+    setFormShow(false);
   };
+  const toggleFormShow=()=>{
+    setFormShow(!formShow);
+    setEditing(false);
+  }
+
+  if (loading) {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  }
 
   return (
     <div className="flex min-h-screen">
@@ -69,7 +86,7 @@ const Dashboard = () => {
           <li>
             <button
               className="text-gray-200 hover:text-indigo-400"
-              onClick={() => setEditing(false)} // Close edit form when clicking view details
+              onClick={() => setEditing(false)}
             >
               View User Details
             </button>
@@ -77,9 +94,17 @@ const Dashboard = () => {
           <li className="mt-2">
             <button
               className="text-gray-200 hover:text-indigo-400"
-              onClick={toggleEditing} // Toggle between edit and view modes
+              onClick={toggleEditing}
             >
               Edit User Details
+            </button>
+          </li>
+          <li className="mt-2">
+            <button
+              className="text-gray-200 hover:text-indigo-400"
+              onClick={toggleFormShow}
+            >
+              Edit Form Details
             </button>
           </li>
         </ul>
@@ -93,11 +118,11 @@ const Dashboard = () => {
         <div className="grid grid-cols-2 gap-8 mb-6">
           <div className="bg-white p-4 rounded shadow-lg">
             <h3 className="text-lg font-medium">Payment Status</h3>
-            <p className="text-gray-600">{paymentStatus}</p>
+            <p className="text-gray-600">{userDetails.paymentStatus}</p>
           </div>
           <div className="bg-white p-4 rounded shadow-lg">
             <h3 className="text-lg font-medium">Admit Card Status</h3>
-            <p className="text-gray-600">{admitCardStatus}</p>
+            <p className="text-gray-600">{userDetails.admitCardStatus}</p>
           </div>
         </div>
 
@@ -107,36 +132,23 @@ const Dashboard = () => {
           {editing ? (
             <div>
               {/* Edit Form */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Name</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={updatedDetails.name}
-                  onChange={handleEditChange}
-                  className="mt-1 p-2 w-full border border-gray-300 rounded"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={updatedDetails.email}
-                  onChange={handleEditChange}
-                  className="mt-1 p-2 w-full border border-gray-300 rounded"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Phone</label>
-                <input
-                  type="text"
-                  name="phone"
-                  value={updatedDetails.phone}
-                  onChange={handleEditChange}
-                  className="mt-1 p-2 w-full border border-gray-300 rounded"
-                />
-              </div>
+              {Object.keys(updatedDetails).map((key) => (
+                key !== 'paymentStatus' &&
+                key !== 'admitCardStatus' && (
+                  <div className="mb-4" key={key}>
+                    <label className="block text-sm font-medium text-gray-700">
+                      {key.charAt(0).toUpperCase() + key.slice(1)}
+                    </label>
+                    <input
+                      type="text"
+                      name={key}
+                      value={updatedDetails[key]}
+                      onChange={handleEditChange}
+                      className="mt-1 p-2 w-full border border-gray-300 rounded"
+                    />
+                  </div>
+                )
+              ))}
               <button
                 className="bg-indigo-500 text-white py-2 px-4 rounded"
                 onClick={handleUpdateDetails}
@@ -147,11 +159,21 @@ const Dashboard = () => {
           ) : (
             <div>
               {/* View Mode */}
-              <p className="text-gray-700">Name: {userDetails.name}</p>
-              <p className="text-gray-700">Email: {userDetails.email}</p>
-              <p className="text-gray-700">Phone: {userDetails.phone}</p>
+              {Object.keys(userDetails).map((key) => (
+                key !== 'paymentStatus' &&
+                key !== 'admitCardStatus' && (
+                  <p className="text-gray-700" key={key}>
+                    {key.charAt(0).toUpperCase() + key.slice(1)}: {userDetails[key]}
+                  </p>
+                )
+              ))}
             </div>
           )}
+
+
+          {
+            formShow && <FormDetailPage />
+          }
         </div>
       </div>
     </div>
@@ -159,4 +181,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
