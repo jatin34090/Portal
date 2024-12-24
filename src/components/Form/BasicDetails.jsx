@@ -12,6 +12,7 @@ const BasicDetailsForm = () => {
     examName: "",
     examDate: "",
   });
+  const [dataExist, setDataExist] = useState(false);
 
   // State for validation errors
   const [errors, setErrors] = useState({
@@ -64,10 +65,15 @@ const BasicDetailsForm = () => {
 
     if (isValid) {
       try {
-        const response = await axios.post("/form/basicDetails/addForm", formData);
+        const response = await axios.post(
+          "/form/basicDetails/addForm",
+          formData
+        );
         setSubmitMessage("Basic details submitted successfully!");
         console.log(response.data);
-        navigate("/batchDetailsForm");
+        if (!dataExist) {
+          navigate("/batchDetailsForm");
+        }
 
         setFormData({
           dob: "",
@@ -88,12 +94,15 @@ const BasicDetailsForm = () => {
       try {
         const response = await axios.get("/form/basicDetails/getForm");
         const data = response.data;
-
+        if (data.length != 0) {
+          setDataExist(true);
+        }
+        console.log("data from basic details", data);
         setFormData({
-          dob: data[0]?.dob || "",
+          dob: data[0]?.dob.split("T")[0] || "",
           gender: data[0]?.gender || "",
           examName: data[0]?.examName || "",
-          examDate: data[0]?.examDate || "",
+          examDate: data[0]?.examDate.split("T")[0] || "",
         });
       } catch (error) {
         console.error("Error fetching form data:", error);
@@ -115,7 +124,10 @@ const BasicDetailsForm = () => {
 
         {Object.keys(formData).map((key) => (
           <div className="flex flex-col" key={key}>
-            <label htmlFor={key} className="text-sm font-medium text-gray-600 mb-1">
+            <label
+              htmlFor={key}
+              className="text-sm font-medium text-gray-600 mb-1"
+            >
               {key.replace(/([A-Z])/g, " $1")}
             </label>
 
@@ -189,7 +201,7 @@ const BasicDetailsForm = () => {
             type="submit"
             className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200"
           >
-            Submit
+            {dataExist ? "Update" : "Submit"}
           </button>
         </div>
 

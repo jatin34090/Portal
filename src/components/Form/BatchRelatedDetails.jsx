@@ -28,13 +28,14 @@ const BatchRelatedDetailsForm = () => {
         const data = response.data;
         console.log("data", data);
         console.log("data.length", data.length);
-        if(data.length != 0){
-
+        if (data.length != 0) {
           setDataExist(true);
         }
 
         if (data.length > 0) {
-          const sessionYear = new Date(data[0].session_start_date).getFullYear().toString();
+          const sessionYear = new Date(data[0].session_start_date)
+            .getFullYear()
+            .toString();
           setFormData({
             preferred_batch: data[0].preferred_batch,
             subject_combination: data[0].subject_combination,
@@ -56,7 +57,9 @@ const BatchRelatedDetailsForm = () => {
 
     Object.keys(formData).forEach((key) => {
       if (!formData[key].trim()) {
-        formErrors[key] = `${key.replace(/_/g, " ").replace(/([A-Z])/g, " $1")} is required`;
+        formErrors[key] = `${key
+          .replace(/_/g, " ")
+          .replace(/([A-Z])/g, " $1")} is required`;
         isValid = false;
       }
     });
@@ -81,12 +84,18 @@ const BatchRelatedDetailsForm = () => {
     if (validateForm()) {
       try {
         console.log("dataExist", dataExist);
-        const url = dataExist ? "/form/batchRelatedDetails/updateForm" : "/form/batchRelatedDetails/addForm";
-        console .log("url", url);
-        const method =dataExist ? axios.patch : axios.post;
-        
+        const url = dataExist
+          ? "/form/batchRelatedDetails/updateForm"
+          : "/form/batchRelatedDetails/addForm";
+        console.log("url", url);
+        const method = dataExist ? axios.patch : axios.post;
+
         const response = await method(url, formData);
-        setSubmitMessage(formData.preferred_batch ? "Batch related details updated successfully!" : "Batch related details submitted successfully!");
+        setSubmitMessage(
+          formData.preferred_batch
+            ? "Batch related details updated successfully!"
+            : "Batch related details submitted successfully!"
+        );
 
         // Reset form data after successful submission
         setFormData({
@@ -94,8 +103,9 @@ const BatchRelatedDetailsForm = () => {
           subject_combination: "",
           session_start_date: "",
         });
-
-        navigate("/educationalDetailsForm");
+        if (dataExist) {
+          navigate("/educationalDetailsForm");
+        }
       } catch (error) {
         console.error("Error submitting form:", error);
         setSubmitMessage("Error submitting the form. Please try again.");
@@ -105,12 +115,22 @@ const BatchRelatedDetailsForm = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-50 to-indigo-50">
-      <form className="w-full max-w-lg bg-white shadow-lg rounded-lg p-6 space-y-6" onSubmit={onSubmit}>
-        <h1 className="text-2xl font-bold text-center text-indigo-600">Batch Related Details Form</h1>
+      <form
+        className="w-full max-w-lg bg-white shadow-lg rounded-lg p-6 space-y-6"
+        onSubmit={onSubmit}
+      >
+        <h1 className="text-2xl font-bold text-center text-indigo-600">
+          Batch Related Details Form
+        </h1>
 
         {/* Preferred Batch */}
         <div className="flex flex-col">
-          <label htmlFor="preferred_batch" className="text-sm font-medium text-gray-600 mb-1">Preferred Batch</label>
+          <label
+            htmlFor="preferred_batch"
+            className="text-sm font-medium text-gray-600 mb-1"
+          >
+            Preferred Batch
+          </label>
           <select
             id="preferred_batch"
             name="preferred_batch"
@@ -120,15 +140,26 @@ const BatchRelatedDetailsForm = () => {
           >
             <option value="">Select Preferred Batch</option>
             {batchOptions.map((batch, index) => (
-              <option key={index} value={batch}>{batch}</option>
+              <option key={index} value={batch}>
+                {batch}
+              </option>
             ))}
           </select>
-          {errors.preferred_batch && <p className="text-red-500 text-xs mt-1">{errors.preferred_batch}</p>}
+          {errors.preferred_batch && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.preferred_batch}
+            </p>
+          )}
         </div>
 
         {/* Subject Combination */}
         <div className="flex flex-col">
-          <label htmlFor="subject_combination" className="text-sm font-medium text-gray-600 mb-1">Subject Combination</label>
+          <label
+            htmlFor="subject_combination"
+            className="text-sm font-medium text-gray-600 mb-1"
+          >
+            Subject Combination
+          </label>
           <select
             id="subject_combination"
             name="subject_combination"
@@ -138,15 +169,26 @@ const BatchRelatedDetailsForm = () => {
           >
             <option value="">Select Subject Combination</option>
             {subjectOptions.map((subject, index) => (
-              <option key={index} value={subject}>{subject}</option>
+              <option key={index} value={subject}>
+                {subject}
+              </option>
             ))}
           </select>
-          {errors.subject_combination && <p className="text-red-500 text-xs mt-1">{errors.subject_combination}</p>}
+          {errors.subject_combination && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.subject_combination}
+            </p>
+          )}
         </div>
 
         {/* Session Start Date */}
         <div className="flex flex-col">
-          <label htmlFor="session_start_date" className="text-sm font-medium text-gray-600 mb-1">Session Start Date</label>
+          <label
+            htmlFor="session_start_date"
+            className="text-sm font-medium text-gray-600 mb-1"
+          >
+            Session Start Date
+          </label>
           <select
             id="session_start_date"
             name="session_start_date"
@@ -156,10 +198,16 @@ const BatchRelatedDetailsForm = () => {
           >
             <option value="">Select Session Start Date</option>
             {sessionYearOptions.map((year, index) => (
-              <option key={index} value={year}>{year}</option>
+              <option key={index} value={year}>
+                {year}
+              </option>
             ))}
           </select>
-          {errors.session_start_date && <p className="text-red-500 text-xs mt-1">{errors.session_start_date}</p>}
+          {errors.session_start_date && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.session_start_date}
+            </p>
+          )}
         </div>
 
         {/* Submit Button */}
@@ -168,13 +216,19 @@ const BatchRelatedDetailsForm = () => {
             type="submit"
             className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200"
           >
-            Submit
+            {dataExist ? "Update" : "Submit"}
           </button>
         </div>
 
         {/* Submit Message */}
         {submitMessage && (
-          <p className={`text-sm text-center mt-4 ${submitMessage.includes("successfully") ? "text-green-500" : "text-red-500"}`}>
+          <p
+            className={`text-sm text-center mt-4 ${
+              submitMessage.includes("successfully")
+                ? "text-green-500"
+                : "text-red-500"
+            }`}
+          >
             {submitMessage}
           </p>
         )}

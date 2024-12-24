@@ -1,7 +1,10 @@
 import axios from "../api/axios"
+import useRazorpay from "react-razorpay";
+ 
 
 const payment = () => {
-
+    const [Razorpay] = useRazorpay();
+    
     const checkoutHandler = async () => {
 
 const {data: {key} } =  await axios.get("/api/payment/getKey")

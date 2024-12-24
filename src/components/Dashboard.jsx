@@ -18,12 +18,11 @@ const Dashboard = () => {
     name: '',
     email: '',
     phone: '',
-    address: '',
-    dob: '',
-    gender: '',
-    paymentStatus: 'Pending',
-    admitCardStatus: 'Not Issued',
+ 
+   
   });
+  const [paymentStatus, SetPaymentStatus] = useState("Pending");
+  const [admitCardStatus, setAdmitCardStatus] = useState("Pending");
   const [editing, setEditing] = useState(false);
   const [updatedDetails, setUpdatedDetails] = useState({ ...userDetails });
   const [loading, setLoading] = useState(true);
@@ -56,7 +55,7 @@ const Dashboard = () => {
   const handleUpdateDetails = async () => {
     try {
       const response = await axios.patch('/students/editStudent', updatedDetails);
-      setUserDetails({ ...updatedDetails });
+      setUserDetails((prev) => ({ ...prev, ...updatedDetails }));
       setEditing(false);
       console.log('Details updated successfully:', response.data);
     } catch (error) {
@@ -118,11 +117,11 @@ const Dashboard = () => {
         <div className="grid grid-cols-2 gap-8 mb-6">
           <div className="bg-white p-4 rounded shadow-lg">
             <h3 className="text-lg font-medium">Payment Status</h3>
-            <p className="text-gray-600">{userDetails.paymentStatus}</p>
+            <p className="text-gray-600">{paymentStatus}</p>
           </div>
           <div className="bg-white p-4 rounded shadow-lg">
             <h3 className="text-lg font-medium">Admit Card Status</h3>
-            <p className="text-gray-600">{userDetails.admitCardStatus}</p>
+            <p className="text-gray-600">{admitCardStatus}</p>
           </div>
         </div>
 
@@ -171,10 +170,14 @@ const Dashboard = () => {
           )}
 
 
-          {
-            formShow && <FormDetailPage />
-          }
+          
+            
+          
         </div>
+       {formShow && <div className="bg-white p-6 m-6 rounded shadow-lg">
+              
+            <FormDetailPage />
+            </div>}
       </div>
     </div>
   );

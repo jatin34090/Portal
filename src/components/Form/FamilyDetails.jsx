@@ -96,7 +96,10 @@ const FamilyDetails = () => {
             ? "Form updated successfully!"
             : "Form submitted successfully!"
         );
-        navigate("/paymentDetailsForm");
+        if(!dataExist){
+
+          navigate("/paymentDetailsForm");
+        }
         console.log("Response:", response);
       } catch (error) {
         setSubmitMessage("Error submitting form");
@@ -166,7 +169,7 @@ const FamilyDetails = () => {
             type="submit"
             className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200"
           >
-            Submit
+           { dataExist ? "Update" : "Submit"}
           </button>
         </div>
 
