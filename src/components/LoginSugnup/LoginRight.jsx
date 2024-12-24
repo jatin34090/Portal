@@ -67,12 +67,12 @@ export default function LoginRight() {
 
   return (
     <form
-      className="flex flex-col gap-6 w-full max-w-lg mx-auto p-6 bg-white shadow-lg rounded-lg justify-center border border-gray-200"
+      className="flex flex-col gap-6 w-1/2 max-w-lg mx-auto p-6 bg-white shadow-lg rounded-lg justify-center border border-gray-200"
       onSubmit={onSubmit}
     >
-      <h2 className="text-2xl font-semibold text-center text-gray-800">Login</h2>
+      <h2 className="text-2xl font-bold text-center text-indigo-600">Login</h2>
 
-      <div className="flex flex-col items-start">
+      <div className="flex flex-col items-start ">
         <label htmlFor="email" className="text-gray-600">
           Email
         </label>

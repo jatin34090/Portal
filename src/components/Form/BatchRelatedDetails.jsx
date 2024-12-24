@@ -6,13 +6,17 @@ const BatchRelatedDetailsForm = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    preferred_batch: "",
-    subject_combination: "",
-    session_start_date: "",
+    preferredBatch: "",
+    subjectCombination: "",
+    sessionStartDate: "",
   });
   const [dataExist, setDataExist] = useState(false);
 
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState({
+    preferredBatch: "",
+    subjectCombination: "",
+    sessionStartDate: "",
+  });
   const [submitMessage, setSubmitMessage] = useState("");
 
   // Options for select dropdowns
@@ -26,20 +30,20 @@ const BatchRelatedDetailsForm = () => {
       try {
         const response = await axios.get("/form/batchRelatedDetails/getForm");
         const data = response.data;
-        console.log("data", data);
+        console.log("data hhh", data);
         console.log("data.length", data.length);
         if (data.length != 0) {
           setDataExist(true);
         }
-
+        console.log("DATA", data);
         if (data.length > 0) {
-          const sessionYear = new Date(data[0].session_start_date)
+          const sessionYear = new Date(data[0].sessionStartDate)
             .getFullYear()
             .toString();
           setFormData({
-            preferred_batch: data[0].preferred_batch,
-            subject_combination: data[0].subject_combination,
-            session_start_date: sessionYear,
+            preferredBatch: data[0].preferredBatch,
+            subjectCombination: data[0].subjectCombination,
+            sessionStartDate: sessionYear,
           });
         }
       } catch (error) {
@@ -51,15 +55,17 @@ const BatchRelatedDetailsForm = () => {
   }, []);
 
   // Validate form fields
+
   const validateForm = () => {
-    const formErrors = {};
+    let formErrors = {};
     let isValid = true;
 
     Object.keys(formData).forEach((key) => {
       if (!formData[key].trim()) {
-        formErrors[key] = `${key
-          .replace(/_/g, " ")
-          .replace(/([A-Z])/g, " $1")} is required`;
+        console.log("key", key);
+        formErrors[key] = `${key.replace(/([A-Z])/g, " $1")} is required`;
+        console.log("formErrors", formErrors[key]);
+        console.log("key", key);
         isValid = false;
       }
     });
@@ -71,6 +77,8 @@ const BatchRelatedDetailsForm = () => {
   // Handle field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
+    console.log("value", value);
+    console.log("name", name);
     setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
 
     if (value.trim()) {
@@ -78,9 +86,15 @@ const BatchRelatedDetailsForm = () => {
     }
   };
 
+  useEffect(() => {
+    console.log("formData", formData);
+  }, []);
+
   // Handle form submission
   const onSubmit = async (e) => {
     e.preventDefault();
+    console.log("dataExist", validateForm());
+
     if (validateForm()) {
       try {
         console.log("dataExist", dataExist);
@@ -92,18 +106,26 @@ const BatchRelatedDetailsForm = () => {
 
         const response = await method(url, formData);
         setSubmitMessage(
-          formData.preferred_batch
+          formData.preferredBatch
             ? "Batch related details updated successfully!"
             : "Batch related details submitted successfully!"
         );
-
+        console.log("response", response);
+        
+        if (dataExist) {
+          setFormData({
+            preferredBatch: response.data.preferredBatch,
+            subjectCombination: response.data.subjectCombination,
+            sessionStartDate: response.data.sessionStartDate,
+          })
+        }
         // Reset form data after successful submission
         setFormData({
-          preferred_batch: "",
-          subject_combination: "",
-          session_start_date: "",
+          preferredDatch: "",
+          subjectCombination: "",
+          sessionStartDate: "",
         });
-        if (dataExist) {
+        if (!dataExist) {
           navigate("/educationalDetailsForm");
         }
       } catch (error) {
@@ -126,15 +148,15 @@ const BatchRelatedDetailsForm = () => {
         {/* Preferred Batch */}
         <div className="flex flex-col">
           <label
-            htmlFor="preferred_batch"
+            htmlFor="preferredBatch"
             className="text-sm font-medium text-gray-600 mb-1"
           >
             Preferred Batch
           </label>
           <select
-            id="preferred_batch"
-            name="preferred_batch"
-            value={formData.preferred_batch}
+            id="preferredBatch"
+            name="preferredBatch"
+            value={formData.preferredBatch}
             onChange={handleChange}
             className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
           >
@@ -145,38 +167,36 @@ const BatchRelatedDetailsForm = () => {
               </option>
             ))}
           </select>
-          {errors.preferred_batch && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.preferred_batch}
-            </p>
+          {errors.preferredBatch && (
+            <p className="text-red-500 text-xs mt-1">{errors.preferredBatch}</p>
           )}
         </div>
 
         {/* Subject Combination */}
         <div className="flex flex-col">
           <label
-            htmlFor="subject_combination"
+            htmlFor="subjectCombination"
             className="text-sm font-medium text-gray-600 mb-1"
           >
             Subject Combination
           </label>
           <select
-            id="subject_combination"
-            name="subject_combination"
-            value={formData.subject_combination}
+            id="subjectCombination"
+            name="subjectCombination"
+            value={formData.subjectCombination}
             onChange={handleChange}
             className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
           >
-            <option value="">Select Subject Combination</option>
+            <option disabled >Select Subject Combination</option>
             {subjectOptions.map((subject, index) => (
               <option key={index} value={subject}>
                 {subject}
               </option>
             ))}
           </select>
-          {errors.subject_combination && (
+          {errors.subjectCombination && (
             <p className="text-red-500 text-xs mt-1">
-              {errors.subject_combination}
+              {errors.subjectCombination}
             </p>
           )}
         </div>
@@ -184,28 +204,28 @@ const BatchRelatedDetailsForm = () => {
         {/* Session Start Date */}
         <div className="flex flex-col">
           <label
-            htmlFor="session_start_date"
+            htmlFor="sessionStartDate"
             className="text-sm font-medium text-gray-600 mb-1"
           >
             Session Start Date
           </label>
           <select
-            id="session_start_date"
-            name="session_start_date"
-            value={formData.session_start_date}
+            id="sessionStartDate"
+            name="sessionStartDate"
+            value={formData.sessionStartDate}
             onChange={handleChange}
             className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
           >
-            <option value="">Select Session Start Date</option>
+            <option disabled >Select Session Start Date</option>
             {sessionYearOptions.map((year, index) => (
               <option key={index} value={year}>
                 {year}
               </option>
             ))}
           </select>
-          {errors.session_start_date && (
+          {errors.sessionStartDate && (
             <p className="text-red-500 text-xs mt-1">
-              {errors.session_start_date}
+              {errors.sessionStartDate}
             </p>
           )}
         </div>
@@ -216,7 +236,7 @@ const BatchRelatedDetailsForm = () => {
             type="submit"
             className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200"
           >
-            {dataExist ? "Update" : "Submit"}
+            {dataExist ? "Update" : "Next"}
           </button>
         </div>
 

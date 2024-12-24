@@ -169,7 +169,7 @@ const FamilyDetails = () => {
             type="submit"
             className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200"
           >
-           { dataExist ? "Update" : "Submit"}
+           { dataExist ? "Update" : "Next"}
           </button>
         </div>
 

@@ -115,7 +115,7 @@ const EducationalDetailsForm = () => {
         const method = dataExist ? axios.patch : axios.post;
         await method(apiUrl, formData);
         setSubmitMessage("Form submitted successfully!");
-        if (dataExist) {
+        if (!dataExist) {
           navigate("/familyDetailsForm");
         }
       } catch (error) {
@@ -232,7 +232,7 @@ const EducationalDetailsForm = () => {
             type="submit"
             className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200"
           >
-            {dataExist ? "Update" : "Submit"}
+            {dataExist ? "Update" : "Next"}
           </button>
         </div>
 

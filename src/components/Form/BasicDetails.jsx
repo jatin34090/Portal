@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import {useNavigate} from "react-router-dom";
+import {useState, useEffect} from "react";
 import axios from "../../api/axios";
-import { useNavigate } from "react-router-dom";
 
 const BasicDetailsForm = () => {
   const navigate = useNavigate();
@@ -65,13 +65,22 @@ const BasicDetailsForm = () => {
 
     if (isValid) {
       try {
-        const response = await axios.post(
-          "/form/basicDetails/addForm",
-          formData
-        );
-        setSubmitMessage("Basic details submitted successfully!");
-        console.log(response.data);
-        if (!dataExist) {
+        if (dataExist) {
+          // Update existing data
+          const response = await axios.patch("/form/basicDetails/updateForm", formData);
+          setSubmitMessage("Basic details updated successfully!");
+          console.log("response", response);
+          setFormData({
+            dob: response.data.dob.split("T")[0] ,
+            gender: response.data.gender ,
+            examName: response.data.examName ,
+            examDate: response.data.examDate.split("T")[0],
+
+          })
+        } else {
+          // Create new data
+          await axios.post("/form/basicDetails/addForm", formData);
+          setSubmitMessage("Basic details submitted successfully!");
           navigate("/batchDetailsForm");
         }
 
@@ -81,6 +90,7 @@ const BasicDetailsForm = () => {
           examName: "",
           examDate: "",
         });
+        setDataExist(true);
       } catch (error) {
         console.error("Error submitting form:", error);
         setSubmitMessage("Error submitting the form. Please try again.");
@@ -94,16 +104,15 @@ const BasicDetailsForm = () => {
       try {
         const response = await axios.get("/form/basicDetails/getForm");
         const data = response.data;
-        if (data.length != 0) {
+        if (data.length !== 0) {
           setDataExist(true);
+          setFormData({
+            dob: data[0]?.dob.split("T")[0] || "",
+            gender: data[0]?.gender || "",
+            examName: data[0]?.examName || "",
+            examDate: data[0]?.examDate.split("T")[0] || "",
+          });
         }
-        console.log("data from basic details", data);
-        setFormData({
-          dob: data[0]?.dob.split("T")[0] || "",
-          gender: data[0]?.gender || "",
-          examName: data[0]?.examName || "",
-          examDate: data[0]?.examDate.split("T")[0] || "",
-        });
       } catch (error) {
         console.error("Error fetching form data:", error);
       }
@@ -201,7 +210,7 @@ const BasicDetailsForm = () => {
             type="submit"
             className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200"
           >
-            {dataExist ? "Update" : "Submit"}
+            {dataExist ? "Update" : "Next"}
           </button>
         </div>
 

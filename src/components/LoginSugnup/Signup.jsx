@@ -10,7 +10,7 @@ const Signup = () => {
         <div className="col-span-5 ">
           <Left />
         </div>
-        <div className="col-span-7 flex justify-center mx-auto items-center">
+        <div className="col-span-7 flex justify-center">
           {/* <h3>asd</h3> */}
           <SignupRight />
         </div>

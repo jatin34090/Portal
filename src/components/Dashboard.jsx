@@ -132,8 +132,8 @@ const Dashboard = () => {
             <div>
               {/* Edit Form */}
               {Object.keys(updatedDetails).map((key) => (
-                key !== 'paymentStatus' &&
-                key !== 'admitCardStatus' && (
+                key !== 'role' && key!= 'phone' &&
+              (
                   <div className="mb-4" key={key}>
                     <label className="block text-sm font-medium text-gray-700">
                       {key.charAt(0).toUpperCase() + key.slice(1)}

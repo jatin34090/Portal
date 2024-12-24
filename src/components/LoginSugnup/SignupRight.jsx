@@ -102,7 +102,7 @@ export default function SignupRight() {
   };
 
   return (
-    <div className="flex items-center justify-center  bg-gradient-to-r from-blue-50 to-indigo-100">
+    <div className="flex bg-gradient-to-r from-blue-50 to-indigo-100">
       <form
         className="w-full max-w-lg bg-white shadow-lg rounded-lg p-6 space-y-6"
         onSubmit={onSubmit}

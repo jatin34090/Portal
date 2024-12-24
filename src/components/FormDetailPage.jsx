@@ -42,7 +42,7 @@ const FormDetailPage = () => {
             <h2>
               <button
                 type="button"
-                className="flex items-center justify-between w-full p-5 font-medium text-gray-500 border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3"
+                className="flex items-center justify-between w-full p-5 font-medium text-gray-500 border border-b-0 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:focus:border-0 dark:hover:border-0 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3"
                 onClick={() =>
                   setFormOpen((prev) => (prev === form.id ? "" : form.id))
                 }
@@ -70,7 +70,7 @@ const FormDetailPage = () => {
               </button>
             </h2>
             {formOpen === form.id && (
-              <div id={form.id} className="p-5 border border-gray-200">
+              <div id={form.id} className="p-5 ">
                 <p className="mb-2">{form.description}</p>
                 {form.component}
               </div>

@@ -11,7 +11,7 @@ const Login = () => {
 
         <Left/>
         </div >
-        <div className="col-span-7 flex justify-center">
+        <div className="col-span-7 flex justify-center p-6">
 <LoginRight/>
         </div>
       </div>
