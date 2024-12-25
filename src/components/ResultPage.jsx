@@ -1,11 +1,18 @@
-import React from 'react'
+import React from "react";
 
 const ResultPage = () => {
-  return (
-    <div className="flex justify-center items-center">
-        Result
-    </div>
-  )
+const resultDetails = async()=>{
+    const response = await axios.get("/students/")
 }
 
-export default ResultPage
+  return (
+    <div className="flex justify-center items-center ">
+      <div className="flex flex-col justify-center items-center shadow-lg p-6 rounded-lg">
+        
+        Result
+      </div>
+    </div>
+  );
+};
+
+export default ResultPage;

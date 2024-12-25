@@ -3,11 +3,12 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../api/axios";
 import FormDetailPage from "./FormDetailPage";
+import ResultPage from "./ResultPage";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [formShow, setFormShow] = useState(false);
-
+const [resultShow, setResultShow] = useState(false);
   // State to store user details and statuses
   const [userDetails, setUserDetails] = useState({
     name: "",
@@ -89,12 +90,19 @@ const Dashboard = () => {
   const toggleEditing = () => {
     setEditing(!editing);
     setFormShow(false);
+    setResultShow(false);
   };
 
   const toggleFormShow = () => {
     setFormShow(!formShow);
     setEditing(false);
+    setResultShow(false);
   };
+  const toggleResult = () => {
+      setResultShow(!resultShow);
+      setEditing(false);
+      setFormShow(false);
+  }
 
   if (loading) {
     return (
@@ -132,6 +140,14 @@ const Dashboard = () => {
               onClick={toggleFormShow}
             >
               Edit Form Details
+            </button>
+          </li>
+          <li className="mt-2">
+            <button
+              className="text-gray-200 hover:text-indigo-400"
+              onClick={toggleResult}
+            >
+              Result Details
             </button>
           </li>
           <li className="mt-6">
@@ -214,6 +230,13 @@ const Dashboard = () => {
             <FormDetailPage />
           </div>
         )}
+
+
+        <div>
+          {
+             resultShow && <ResultPage/>
+          }
+        </div>
       </div>
     </div>
   );
