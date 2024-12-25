@@ -102,7 +102,7 @@ const FamilyDetails = () => {
         }
         console.log("Response:", response);
       } catch (error) {
-        setSubmitMessage("Error submitting form");
+        setSubmitMessage(error.response.data);
         console.error("Submission error:", error);
       }
     }

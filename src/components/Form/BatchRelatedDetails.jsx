@@ -130,7 +130,7 @@ const BatchRelatedDetailsForm = () => {
         }
       } catch (error) {
         console.error("Error submitting form:", error);
-        setSubmitMessage("Error submitting the form. Please try again.");
+        setSubmitMessage(error.response.data);
       }
     }
   };

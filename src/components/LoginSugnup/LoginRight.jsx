@@ -59,7 +59,7 @@ export default function LoginRight() {
         localStorage.setItem("token", response.data.token);
         navigate("/dashboard");
       } catch (error) {
-        setSubmitMessage("Error logging in");
+        setSubmitMessage(error.response.data);
         console.error("Error logging in", error);
       }
     }

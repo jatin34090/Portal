@@ -68,8 +68,11 @@ export default function SignupRight() {
         localStorage.setItem("token", response.data.token);
         navigate("/basicDetailsForm");
       } catch (error) {
-        setSubmitMessage("Error submitting form");
+        console.log("Error submitting form 2", error.response.data);
+        setSubmitMessage(error.response.data);
+
         console.error("Error submitting form", error);
+        
       }
     }
   };

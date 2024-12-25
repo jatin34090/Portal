@@ -17,6 +17,7 @@ import { Provider } from 'react-redux';
 import store from './redux/store';
 import ForgotPassword from "./components/ForgetPassword";
 import ResetPassword from "./components/ResetPassword";
+import ResultPage from "./components/ResultPage";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
           <Route path=  "/showMessage" element={<ShowMessage />} />
           <Route path="/forgetPassword" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route path="result" element={<ResultPage/>} />
           {/* <Route path = "/formDetailsPage" element={<FormDetailPage />}/> */}
          {/* <Route path = "/dashboard" element={<Dashboard />} /> */}
         </Routes>

@@ -119,7 +119,7 @@ const EducationalDetailsForm = () => {
           navigate("/familyDetailsForm");
         }
       } catch (error) {
-        setSubmitMessage("Error submitting form");
+        setSubmitMessage(error.response.data);
         console.error("Error submitting form", error);
       }
     }
@@ -128,11 +128,7 @@ const EducationalDetailsForm = () => {
   // Convert class number to Roman numeral
   const convertToRoman = (num) => {
     const romanNumerals = {
-      1: "I",
-      2: "II",
-      3: "III",
-      4: "IV",
-      5: "V",
+    
       6: "VI",
       7: "VII",
       8: "VIII",
@@ -179,13 +175,11 @@ const EducationalDetailsForm = () => {
                 {key === "YearOfPassing" ? (
                   <option value="2024">2024</option>
                 ) : (
-                  Array.from({ length: 12 }, (_, i) => i + 1).map(
-                    (classNum) => (
-                      <option key={classNum} value={classNum}>
-                        {convertToRoman(classNum)}
-                      </option>
-                    )
-                  )
+                  Array.from({ length: 7 }, (_, i) => i + 6).map((classNum) => (
+                    <option key={classNum} value={classNum}>
+                      {convertToRoman(classNum)}
+                    </option>
+                  ))
                 )}
               </select>
             ) : key === "Board" ? (

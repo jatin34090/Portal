@@ -22,7 +22,7 @@ const payment = () => {
             callback_url: "http://localhost:5000/api/paymentverification",
 
             prefill: {
-                name: "Gaurav Kumar",
+                name: "jatin gupta",
                 email: "5Yt0d@example.com",
                 contact: "9999999999",
             },
