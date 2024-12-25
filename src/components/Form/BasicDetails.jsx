@@ -1,11 +1,10 @@
-import {useNavigate} from "react-router-dom";
-import {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import axios from "../../api/axios";
+import { useNavigate } from "react-router-dom";
 
 const BasicDetailsForm = () => {
   const navigate = useNavigate();
 
-  // State for form data
   const [formData, setFormData] = useState({
     dob: "",
     gender: "",
@@ -14,91 +13,19 @@ const BasicDetailsForm = () => {
   });
   const [dataExist, setDataExist] = useState(false);
 
-  // State for validation errors
   const [errors, setErrors] = useState({
     dob: "",
     gender: "",
     examName: "",
     examDate: "",
   });
-
-  // State for submission message
   const [submitMessage, setSubmitMessage] = useState("");
 
-  // Handle field changes
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: value,
-    }));
+  // Dropdown options
+  const genderOptions = ["Male", "Female", "Other"];
+  const examNameOptions = ["S.Dat", "Rise"];
+  const examDateOptions = ["2024-01-15", "2024-02-20", "2024-03-10"];
 
-    // Clear error for the updated field if it's not empty
-    if (value.trim() !== "") {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        [name]: "",
-      }));
-    }
-  };
-
-  // Validate the form fields
-  const validateForm = () => {
-    let formErrors = {};
-    let isValid = true;
-
-    Object.keys(formData).forEach((key) => {
-      if (!formData[key].trim()) {
-        formErrors[key] = `${key.replace(/([A-Z])/g, " $1")} is required`;
-        isValid = false;
-      }
-    });
-
-    setErrors(formErrors);
-    return isValid;
-  };
-
-  // Handle form submission
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    const isValid = validateForm();
-
-    if (isValid) {
-      try {
-        if (dataExist) {
-          // Update existing data
-          const response = await axios.patch("/form/basicDetails/updateForm", formData);
-          setSubmitMessage("Basic details updated successfully!");
-          console.log("response", response);
-          setFormData({
-            dob: response.data.dob.split("T")[0] ,
-            gender: response.data.gender ,
-            examName: response.data.examName ,
-            examDate: response.data.examDate.split("T")[0],
-
-          })
-        } else {
-          // Create new data
-          await axios.post("/form/basicDetails/addForm", formData);
-          setSubmitMessage("Basic details submitted successfully!");
-          navigate("/batchDetailsForm");
-        }
-
-        setFormData({
-          dob: "",
-          gender: "",
-          examName: "",
-          examDate: "",
-        });
-        setDataExist(true);
-      } catch (error) {
-        console.error("Error submitting form:", error);
-        setSubmitMessage("Error submitting the form. Please try again.");
-      }
-    }
-  };
-
-  // Fetch form data on component mount
   useEffect(() => {
     const fetchBasicDetails = async () => {
       try {
@@ -121,6 +48,57 @@ const BasicDetailsForm = () => {
     fetchBasicDetails();
   }, []);
 
+  const validateForm = () => {
+    let formErrors = {};
+    let isValid = true;
+
+    Object.keys(formData).forEach((key) => {
+      if (!formData[key].trim()) {
+        formErrors[key] = `${key.replace(/([A-Z])/g, " $1")} is required`;
+        isValid = false;
+      }
+    });
+
+    setErrors(formErrors);
+    return isValid;
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
+
+    if (value.trim()) {
+      setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
+    }
+  };
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+
+    if (validateForm()) {
+      try {
+        const url = dataExist
+          ? "/form/basicDetails/updateForm"
+          : "/form/basicDetails/addForm";
+        const method = dataExist ? axios.patch : axios.post;
+
+        const response = await method(url, formData);
+        setSubmitMessage(
+          dataExist
+            ? "Basic details updated successfully!"
+            : "Basic details submitted successfully!"
+        );
+
+        if (!dataExist) {
+          navigate("/batchDetailsForm");
+        }
+      } catch (error) {
+        console.error("Error submitting form:", error);
+        setSubmitMessage("Error submitting the form. Please try again.");
+      }
+    }
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-50 to-indigo-50">
       <form
@@ -131,80 +109,95 @@ const BasicDetailsForm = () => {
           Basic Details Form
         </h1>
 
-        {Object.keys(formData).map((key) => (
-          <div className="flex flex-col" key={key}>
-            <label
-              htmlFor={key}
-              className="text-sm font-medium text-gray-600 mb-1"
-            >
-              {key.replace(/([A-Z])/g, " $1")}
-            </label>
+        {/* Date of Birth */}
+        <div className="flex flex-col">
+          <label htmlFor="dob" className="text-sm font-medium text-gray-600 mb-1">
+            Date of Birth
+          </label>
+          <input
+            type="date"
+            id="dob"
+            name="dob"
+            value={formData.dob}
+            onChange={handleChange}
+            className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+          />
+          {errors.dob && <p className="text-red-500 text-xs mt-1">{errors.dob}</p>}
+        </div>
 
-            {key === "dob" ? (
-              <input
-                type="date"
-                id={key}
-                name={key}
-                value={formData[key]}
-                onChange={handleChange}
-                className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
-              />
-            ) : key === "gender" ? (
-              <select
-                id={key}
-                name={key}
-                value={formData[key]}
-                onChange={handleChange}
-                className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
-              >
-                <option value="">Select Gender</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
-              </select>
-            ) : key === "examName" ? (
-              <select
-                id={key}
-                name={key}
-                value={formData[key]}
-                onChange={handleChange}
-                className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
-              >
-                <option value="">Select Exam Name</option>
-                <option value="S.Dat">S.Dat</option>
-                <option value="Rise">Rise</option>
-              </select>
-            ) : key === "examDate" ? (
-              <select
-                id={key}
-                name={key}
-                value={formData[key]}
-                onChange={handleChange}
-                className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
-              >
-                <option value="">Select Exam Date</option>
-                <option value="2024-01-15">January 15, 2024</option>
-                <option value="2024-02-20">February 20, 2024</option>
-                <option value="2024-03-10">March 10, 2024</option>
-              </select>
-            ) : (
-              <input
-                type="text"
-                id={key}
-                name={key}
-                value={formData[key]}
-                onChange={handleChange}
-                placeholder={`Enter ${key.replace(/([A-Z])/g, " $1")}`}
-                className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
-              />
-            )}
+        {/* Gender */}
+        <div className="flex flex-col">
+          <label htmlFor="gender" className="text-sm font-medium text-gray-600 mb-1">
+            Gender
+          </label>
+          <select
+            id="gender"
+            name="gender"
+            value={formData.gender}
+            onChange={handleChange}
+            className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+          >
+            <option value="">Select Gender</option>
+            {genderOptions.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+          {errors.gender && (
+            <p className="text-red-500 text-xs mt-1">{errors.gender}</p>
+          )}
+        </div>
 
-            {errors[key] && (
-              <p className="text-red-500 text-xs mt-1">{errors[key]}</p>
-            )}
-          </div>
-        ))}
+        {/* Exam Name */}
+        <div className="flex flex-col">
+          <label htmlFor="examName" className="text-sm font-medium text-gray-600 mb-1">
+            Exam Name
+          </label>
+          <select
+            id="examName"
+            name="examName"
+            value={formData.examName}
+            onChange={handleChange}
+            className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+          >
+            <option value="">Select Exam Name</option>
+            {examNameOptions.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+          {errors.examName && (
+            <p className="text-red-500 text-xs mt-1">{errors.examName}</p>
+          )}
+        </div>
 
+        {/* Exam Date */}
+        <div className="flex flex-col">
+          <label htmlFor="examDate" className="text-sm font-medium text-gray-600 mb-1">
+            Exam Date
+          </label>
+          <select
+            id="examDate"
+            name="examDate"
+            value={formData.examDate}
+            onChange={handleChange}
+            className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+          >
+            <option value="">Select Exam Date</option>
+            {examDateOptions.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+          {errors.examDate && (
+            <p className="text-red-500 text-xs mt-1">{errors.examDate}</p>
+          )}
+        </div>
+
+        {/* Submit Button */}
         <div className="flex justify-between items-center">
           <button
             type="submit"
@@ -214,6 +207,7 @@ const BasicDetailsForm = () => {
           </button>
         </div>
 
+        {/* Submit Message */}
         {submitMessage && (
           <p
             className={`text-sm text-center mt-4 ${

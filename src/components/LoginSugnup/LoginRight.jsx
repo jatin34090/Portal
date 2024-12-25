@@ -72,7 +72,7 @@ export default function LoginRight() {
     >
       <h2 className="text-2xl font-bold text-center text-indigo-600">Login</h2>
 
-      <div className="flex flex-col items-start ">
+      <div className="flex flex-col items-start">
         <label htmlFor="email" className="text-gray-600">
           Email
         </label>
@@ -131,10 +131,18 @@ export default function LoginRight() {
           <button
             className="text-blue-500 font-medium hover:underline"
             onClick={() => navigate("/signup")}
+            type="button"
           >
             Sign up here
           </button>
         </p>
+        <button
+          className="text-blue-500 font-medium hover:underline mt-2"
+          onClick={() => navigate("/forgetPassword")}
+          type="button"
+        >
+          Forgot Password?
+        </button>
       </div>
     </form>
   );

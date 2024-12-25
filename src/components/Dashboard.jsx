@@ -1,15 +1,10 @@
 // src/pages/Dashboard.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-
 import axios from '../api/axios';
 import FormDetailPage from './FormDetailPage';
-import { fetchFamilyDetails, updateFamilyDetails } from '../redux/slices/familyDetailsSlice';
-
 
 const Dashboard = () => {
- 
   const navigate = useNavigate();
   const [formShow, setFormShow] = useState(false);
 
@@ -18,10 +13,8 @@ const Dashboard = () => {
     name: '',
     email: '',
     phone: '',
- 
-   
   });
-  const [paymentStatus, SetPaymentStatus] = useState("Pending");
+  const [paymentStatus, setPaymentStatus] = useState("Pending");
   const [admitCardStatus, setAdmitCardStatus] = useState("Pending");
   const [editing, setEditing] = useState(false);
   const [updatedDetails, setUpdatedDetails] = useState({ ...userDetails });
@@ -63,14 +56,21 @@ const Dashboard = () => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    // Perform logout actions (e.g., clear tokens, reset state)
+    navigate('/');
+  };
+
   const toggleEditing = () => {
     setEditing(!editing);
     setFormShow(false);
   };
-  const toggleFormShow=()=>{
+
+  const toggleFormShow = () => {
     setFormShow(!formShow);
     setEditing(false);
-  }
+  };
 
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
@@ -106,6 +106,14 @@ const Dashboard = () => {
               Edit Form Details
             </button>
           </li>
+          <li className="mt-6">
+            <button
+              className="w-full bg-red-500 text-white py-2 rounded hover:bg-red-600"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+          </li>
         </ul>
       </div>
 
@@ -132,8 +140,8 @@ const Dashboard = () => {
             <div>
               {/* Edit Form */}
               {Object.keys(updatedDetails).map((key) => (
-                key !== 'role' && key!= 'phone' &&
-              (
+                key !== 'role' &&
+                key !== 'phone' && (
                   <div className="mb-4" key={key}>
                     <label className="block text-sm font-medium text-gray-700">
                       {key.charAt(0).toUpperCase() + key.slice(1)}
@@ -168,16 +176,13 @@ const Dashboard = () => {
               ))}
             </div>
           )}
-
-
-          
-            
-          
         </div>
-       {formShow && <div className="bg-white p-6 m-6 rounded shadow-lg">
-              
+
+        {formShow && (
+          <div className="bg-white p-6 m-6 rounded shadow-lg">
             <FormDetailPage />
-            </div>}
+          </div>
+        )}
       </div>
     </div>
   );

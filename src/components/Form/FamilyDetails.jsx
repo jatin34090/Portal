@@ -98,7 +98,7 @@ const FamilyDetails = () => {
         );
         if(!dataExist){
 
-          navigate("/paymentDetailsForm");
+          navigate("/dashboard");
         }
         console.log("Response:", response);
       } catch (error) {
