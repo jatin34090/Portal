@@ -7,6 +7,7 @@ export default function SignupRight() {
 
   // Regex pattern for phone number validation (+91 followed by 10 digits)
   const phoneRegex = /^\+91[0-9]{10}$/;
+  const [codeVerified, setCodeVerified] = useState(false);
 
   // State hooks
   const [formData, setFormData] = useState({
@@ -60,8 +61,12 @@ export default function SignupRight() {
   const onSubmit = async (e) => {
     e.preventDefault();
     setSubmitMessage("");
+    console.log("Button Clicked");
+    if(codeVerified === false){
+      setSubmitMessage("Please Verify Your Phone Number");
+    }
 
-    if (validateForm()) {
+    if (validateForm() && codeVerified) {
       try {
         const response = await axios.post("/auth/student_signup", formData);
         setSubmitMessage("Form submitted successfully!");
@@ -98,6 +103,7 @@ export default function SignupRight() {
       });
       if (response.status === 200) {
         setSubmitMessage("Phone number verified successfully!");
+        setCodeVerified(true);
       }
     } catch (error) {
       setSubmitMessage("Error verifying phone number");
@@ -227,6 +233,7 @@ export default function SignupRight() {
 
         {/* Submit Button */}
         <button
+
           type="submit"
           className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200"
         >
