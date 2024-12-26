@@ -13,6 +13,8 @@ const EducationalDetailsForm = () => {
   });
 
   const location = useLocation();
+  const pathLocation = location.pathname;
+
   const [checkUrl, setCheckUrl] = useState("");
 
   const [dataExist, setDataExist] = useState(false);
@@ -38,13 +40,8 @@ const EducationalDetailsForm = () => {
         setBoards(boardsResponse.data);
 
         if (formDataResponse.data[0]) {
-          const {
-            LastSchoolName,
-            Percentage,
-            Class,
-            YearOfPassing,
-            Board,
-          } = formDataResponse.data[0];
+          const { LastSchoolName, Percentage, Class, YearOfPassing, Board } =
+            formDataResponse.data[0];
           setFormData({
             LastSchoolName,
             Class,
@@ -61,7 +58,7 @@ const EducationalDetailsForm = () => {
     };
 
     fetchData();
-    setCheckUrl(location.pathname === "/educationalDetailsForm");
+    setCheckUrl(pathLocation === "/educationalDetailsForm");
   }, []);
 
   // Handle input changes and error checking
@@ -117,6 +114,7 @@ const EducationalDetailsForm = () => {
         await method(apiUrl, formData);
         setSubmitMessage("Form submitted successfully!");
         if (checkUrl) {
+          console.log("GO on the dashboard page");
           navigate("/dashboard");
         }
       } catch (error) {
@@ -160,7 +158,11 @@ const EducationalDetailsForm = () => {
               htmlFor={key}
               className="text-sm font-medium text-gray-600 mb-1"
             >
-              {` ${(key==="Class" ? "Current Class" : key.replace(/([A-Z])/g, " $1"))}`}
+              {` ${
+                key === "Class"
+                  ? "Current Class"
+                  : key.replace(/([A-Z])/g, " $1")
+              }`}
             </label>
 
             {key === "Class" || key === "YearOfPassing" ? (
@@ -212,14 +214,11 @@ const EducationalDetailsForm = () => {
                   onChange={handleChange}
                   placeholder={`Enter ${key.replace(/([A-Z])/g, " $1")}`}
                   className={`border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none 
-                    ${
-                    key === "Percentage" ? "w-1/3" : "w-full"
-                  
-                  }
+                    ${key === "Percentage" ? "w-1/3" : "w-full"}
                   `}
                 />
 
-                {key === "Percentage"  && (
+                {key === "Percentage" && (
                   <span className="ml-2 tedxt-gray-600 text-sm">%</span>
                 )}
               </div>
@@ -232,16 +231,18 @@ const EducationalDetailsForm = () => {
         ))}
 
         <div className="flex justify-between items-center">
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            className="w-1/3 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 rounded-lg transition duration-200"
-          >
-            Previous
-          </button>
+          {pathLocation==="/educationalDetailsForm" && (
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 rounded-lg transition duration-200"
+            >
+              Previous
+            </button>
+          )}
           <button
             type="submit"
-            className="w-2/3 bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200 ml-2"
+            className= {`${pathLocation==="/educationalDetailsForm" ?  "w-2/3" : "w-full"} bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200 ml-2`}
           >
             {checkUrl ? "Next" : "Update"}
           </button>

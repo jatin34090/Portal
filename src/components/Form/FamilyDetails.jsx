@@ -7,6 +7,8 @@ const FamilyDetails = () => {
 const location = useLocation();
   const [checkUrl, setCheckUrl] = useState("");
 
+  const pathLocation = location.pathname;
+
   const [formData, setFormData] = useState({
     FatherName: "",
     FatherContactNumber: "",
@@ -130,7 +132,7 @@ const location = useLocation();
       }
     };
     fetchFamilyDetails();
-    setCheckUrl(location.pathname === "/familyDetailsForm");
+    setCheckUrl(pathLocation === "/familyDetailsForm");
   }, []);
 
   return (
@@ -203,18 +205,18 @@ const location = useLocation();
         })}
 
         <div className="flex justify-between items-center">
-          <button
+          {pathLocation === "/familyDetailsForm" &&  <button
             type="button"
             onClick={() => navigate(-1)}
             className="w-1/3 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 rounded-lg transition duration-200"
           >
             Previous
-          </button>
+          </button>}
           <button
             type="submit"
-            className="w-2/3 bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200 ml-2"
+            className={`${pathLocation === "/familyDetailsForm" ?  "w-2/3" : "w-full"} bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200 ml-2`}
           >
-            {checkUrl ?  "Next" : "Submit"}
+            {checkUrl ?  "Next" : "Update"}
           </button>
         </div>
 

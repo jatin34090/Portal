@@ -5,6 +5,7 @@ import { data, useLocation, useNavigate } from "react-router-dom";
 const BatchRelatedDetailsForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const pathLocation = location.pathname;
   const [checkUrl, setCheckUrl] = useState("");
 
   const [formData, setFormData] = useState({
@@ -69,7 +70,7 @@ const BatchRelatedDetailsForm = () => {
     };
 
     fetchBatchData();
-    setCheckUrl(location.pathname === "/batchDetailsForm");
+    setCheckUrl(pathLocation === "/batchDetailsForm");
   }, []);
 
   // Validate form fields
@@ -210,48 +211,52 @@ const BatchRelatedDetailsForm = () => {
         </div>
 
         {/* Subject Combination */}
-        {formData.classForAdmission >=11 &&  <div className="flex flex-col">
-          <label
-            htmlFor="subjectCombination"
-            className="text-sm font-medium text-gray-600 mb-1"
-          >
-            Subject Combination
-          </label>
-          <select
-            id="subjectCombination"
-            name="subjectCombination"
-            value={formData.subjectCombination}
-            onChange={handleChange}
-            className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
-          >
-            <option disabled value="">
-              Select Subject Combination
-            </option>
-            {subjectOptions.map((subject, index) => (
-              <option key={index} value={subject}>
-                {subject}
+        {formData.classForAdmission >= 11 && (
+          <div className="flex flex-col">
+            <label
+              htmlFor="subjectCombination"
+              className="text-sm font-medium text-gray-600 mb-1"
+            >
+              Subject Combination
+            </label>
+            <select
+              id="subjectCombination"
+              name="subjectCombination"
+              value={formData.subjectCombination}
+              onChange={handleChange}
+              className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+            >
+              <option disabled value="">
+                Select Subject Combination
               </option>
-            ))}
-          </select>
-          {errors.subjectCombination && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.subjectCombination}
-            </p>
-          )}
-        </div>}
+              {subjectOptions.map((subject, index) => (
+                <option key={index} value={subject}>
+                  {subject}
+                </option>
+              ))}
+            </select>
+            {errors.subjectCombination && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.subjectCombination}
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Submit and Previous Buttons */}
         <div className="flex justify-between items-center">
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            className="w-1/3 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 rounded-lg transition duration-200"
-          >
-            Previous
-          </button>
+          {pathLocation === "/batchRelatedDetailsForm" && (
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="w-1/3 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 rounded-lg transition duration-200"
+            >
+              Previous
+            </button>
+          )}
           <button
             type="submit"
-            className="w-2/3 bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200 ml-2"
+            className={` ${pathLocation === "/batchRelatedDetailsForm" ? "w-2/3" : "w-full"} bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200 ml-2`}
           >
             {checkUrl ? "Next" : "Update"}
           </button>

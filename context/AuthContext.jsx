@@ -1,5 +1,6 @@
 // src/context/AuthContext.js
 import React, { createContext, useState, useContext } from 'react';
+import { useEffect } from 'react';
 
 // Create Context
 const AuthContext = createContext();
@@ -13,6 +14,10 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem('token') ? true : false);
 
+
+  useEffect(()=>{
+    console.log("isAuthenticated", localStorage.getItem('token') )
+  })
   // Example login function
   const login = () => setIsAuthenticated(true);
 
