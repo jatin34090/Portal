@@ -245,7 +245,7 @@ const BatchRelatedDetailsForm = () => {
 
         {/* Submit and Previous Buttons */}
         <div className="flex justify-between items-center">
-          {pathLocation === "/batchRelatedDetailsForm" && (
+          {pathLocation === "/batchDetailsForm" && (
             <button
               type="button"
               onClick={() => navigate(-1)}
@@ -256,7 +256,7 @@ const BatchRelatedDetailsForm = () => {
           )}
           <button
             type="submit"
-            className={` ${pathLocation === "/batchRelatedDetailsForm" ? "w-2/3" : "w-full"} bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200 ml-2`}
+            className={` ${pathLocation === "/batchDetailsForm" ? "w-2/3" : "w-full"} bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200 ml-2`}
           >
             {checkUrl ? "Next" : "Update"}
           </button>

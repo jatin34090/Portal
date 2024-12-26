@@ -235,7 +235,7 @@ const EducationalDetailsForm = () => {
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 rounded-lg transition duration-200"
+              className="w-1/3 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 rounded-lg transition duration-200"
             >
               Previous
             </button>
