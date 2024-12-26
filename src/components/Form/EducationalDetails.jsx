@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
 import axios from "../../api/axios";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const EducationalDetailsForm = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     LastSchoolName: "",
-    MarksObtained: "",
-    TotalMarks: "",
     Class: "",
+    Percentage: "",
     YearOfPassing: "",
     Board: "",
   });
+
+  const location = useLocation();
+  const [checkUrl, setCheckUrl] = useState("");
 
   const [dataExist, setDataExist] = useState(false);
 
@@ -38,17 +40,15 @@ const EducationalDetailsForm = () => {
         if (formDataResponse.data[0]) {
           const {
             LastSchoolName,
-            MarksObtained,
-            TotalMarks,
+            Percentage,
             Class,
             YearOfPassing,
             Board,
           } = formDataResponse.data[0];
           setFormData({
             LastSchoolName,
-            MarksObtained,
-            TotalMarks,
             Class,
+            Percentage,
             YearOfPassing,
             Board,
           });
@@ -61,6 +61,7 @@ const EducationalDetailsForm = () => {
     };
 
     fetchData();
+    setCheckUrl(location.pathname === "/educationalDetailsForm");
   }, []);
 
   // Handle input changes and error checking
@@ -70,15 +71,15 @@ const EducationalDetailsForm = () => {
       const updatedFormData = { ...prevFormData, [name]: value };
 
       // Error handling for Class and TotalMarks
-      if (name === "Class" && (value < 1 || value > 12)) {
+      if (name === "Class" && (value < 6 || value > 12)) {
         setErrors((prevErrors) => ({
           ...prevErrors,
-          Class: "Class must be between 1 and 12",
+          Class: "Class must be between 6 and 12",
         }));
-      } else if (name === "TotalMarks" && value < prevFormData.MarksObtained) {
+      } else if (name === "Percentage" && (value < 0 || value > 100)) {
         setErrors((prevErrors) => ({
           ...prevErrors,
-          TotalMarks: "Total marks must be greater than marks obtained",
+          Percentage: "Percentage must be between 0 and 100",
         }));
       } else {
         setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
@@ -115,8 +116,8 @@ const EducationalDetailsForm = () => {
         const method = dataExist ? axios.patch : axios.post;
         await method(apiUrl, formData);
         setSubmitMessage("Form submitted successfully!");
-        if (!dataExist) {
-          navigate("/familyDetailsForm");
+        if (checkUrl) {
+          navigate("/dashboard");
         }
       } catch (error) {
         setSubmitMessage(error.response.data);
@@ -128,7 +129,6 @@ const EducationalDetailsForm = () => {
   // Convert class number to Roman numeral
   const convertToRoman = (num) => {
     const romanNumerals = {
-    
       6: "VI",
       7: "VII",
       8: "VIII",
@@ -160,7 +160,7 @@ const EducationalDetailsForm = () => {
               htmlFor={key}
               className="text-sm font-medium text-gray-600 mb-1"
             >
-              {key.replace(/([A-Z])/g, " $1")}
+              {` ${(key==="Class" ? "Current Class" : key.replace(/([A-Z])/g, " $1"))}`}
             </label>
 
             {key === "Class" || key === "YearOfPassing" ? (
@@ -171,7 +171,10 @@ const EducationalDetailsForm = () => {
                 onChange={handleChange}
                 className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
               >
-                <option value="">{`Select ${key}`}</option>
+                <option value="">{`Select ${key.replace(
+                  /([A-Z])/g,
+                  " $1"
+                )}`}</option>
                 {key === "YearOfPassing" ? (
                   <option value="2024">2024</option>
                 ) : (
@@ -200,19 +203,26 @@ const EducationalDetailsForm = () => {
                 ))}
               </select>
             ) : (
-              <input
-                type={
-                  key === "MarksObtained" || key === "TotalMarks"
-                    ? "number"
-                    : "text"
-                }
-                id={key}
-                name={key}
-                value={formData[key]}
-                onChange={handleChange}
-                placeholder={`Enter ${key.replace(/([A-Z])/g, " $1")}`}
-                className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
-              />
+              <div className="flex items-center">
+                <input
+                  type={key === "Percentage" ? "number" : "text"}
+                  id={key}
+                  name={key}
+                  value={formData[key]}
+                  onChange={handleChange}
+                  placeholder={`Enter ${key.replace(/([A-Z])/g, " $1")}`}
+                  className={`border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none 
+                    ${
+                    key === "Percentage" ? "w-1/3" : "w-full"
+                  
+                  }
+                  `}
+                />
+
+                {key === "Percentage"  && (
+                  <span className="ml-2 tedxt-gray-600 text-sm">%</span>
+                )}
+              </div>
             )}
 
             {errors[key] && (
@@ -223,10 +233,17 @@ const EducationalDetailsForm = () => {
 
         <div className="flex justify-between items-center">
           <button
-            type="submit"
-            className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200"
+            type="button"
+            onClick={() => navigate(-1)}
+            className="w-1/3 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 rounded-lg transition duration-200"
           >
-            {dataExist ? "Update" : "Next"}
+            Previous
+          </button>
+          <button
+            type="submit"
+            className="w-2/3 bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200 ml-2"
+          >
+            {checkUrl ? "Next" : "Update"}
           </button>
         </div>
 

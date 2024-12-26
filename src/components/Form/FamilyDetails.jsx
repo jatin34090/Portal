@@ -1,9 +1,11 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "../../api/axios";
 import { useState, useEffect } from "react";
 
 const FamilyDetails = () => {
   const navigate = useNavigate();
+const location = useLocation();
+  const [checkUrl, setCheckUrl] = useState("");
 
   const [formData, setFormData] = useState({
     FatherName: "",
@@ -16,33 +18,48 @@ const FamilyDetails = () => {
   });
 
   const [dataExist, setDataExist] = useState(false);
-
   const [errors, setErrors] = useState({});
   const [submitMessage, setSubmitMessage] = useState("");
   const [isDataFetched, setIsDataFetched] = useState(false);
 
   const phoneRegex = /^[0-9]{10}$/;
 
-  // Handle input changes and immediate validation
+  // Income options
+  const incomeRanges = [
+    "Less than 1 Lakh",
+    "1 Lakh - 5 Lakhs",
+    "5 Lakhs - 10 Lakhs",
+    "10 Lakhs - 20 Lakhs",
+    "More than 20 Lakhs",
+  ];
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log("value", value);
-    console.log("name", name);
-    
+
+    if (name === "MotherContactNumber" || name === "FatherContactNumber") {
+      if (value.length > 10) {
+        return;
+      }
+    }
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
-    if(name === "MotherContactNumber" || name === "FatherContactNumber" ){
-    if (!phoneRegex.test(value)) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: `${name.replace(/([A-Z])/g, " $1")} must be a valid 10-digit number`,
-      }));
-      return;
+
+    if (name === "MotherContactNumber" || name === "FatherContactNumber") {
+      if (!phoneRegex.test(value)) {
+        setErrors((prev) => ({
+          ...prev,
+          [name]: `${name.replace(
+            /([A-Z])/g,
+            " $1"
+          )} must be a valid 10-digit number`,
+        }));
+        return;
+      }
     }
-  }
-  
+
     setErrors((prev) => ({
       ...prev,
       [name]: value.trim()
@@ -51,16 +68,11 @@ const FamilyDetails = () => {
     }));
   };
 
-  // General form validation
   const validateForm = () => {
     const newErrors = {};
 
     Object.keys(formData).forEach((key) => {
-      let value = formData[key];
-
-      if (typeof value === "string") {
-        value = value.trim(); // Only trim strings
-      }
+      const value = formData[key]?.trim();
 
       if (!value) {
         newErrors[key] = `${key.replace(/([A-Z])/g, " $1")} is required`;
@@ -72,8 +84,6 @@ const FamilyDetails = () => {
           /([A-Z])/g,
           " $1"
         )} must be a valid 10-digit number`;
-      } else if (key === "FamilyIncome" && isNaN(value)) {
-        newErrors[key] = "Family income must be a valid number";
       }
     });
 
@@ -81,7 +91,6 @@ const FamilyDetails = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Submit form data
   const onSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
@@ -96,19 +105,17 @@ const FamilyDetails = () => {
             ? "Form updated successfully!"
             : "Form submitted successfully!"
         );
-        if(!dataExist){
-
-          navigate("/dashboard");
+        if (checkUrl) {
+          navigate("/educationalDetailsForm");
         }
         console.log("Response:", response);
       } catch (error) {
-        setSubmitMessage(error.response.data);
+        setSubmitMessage(error.response?.data || "Submission error");
         console.error("Submission error:", error);
       }
     }
   };
 
-  // Fetch existing family details for editing
   useEffect(() => {
     const fetchFamilyDetails = async () => {
       try {
@@ -123,6 +130,7 @@ const FamilyDetails = () => {
       }
     };
     fetchFamilyDetails();
+    setCheckUrl(location.pathname === "/familyDetailsForm");
   }, []);
 
   return (
@@ -135,48 +143,86 @@ const FamilyDetails = () => {
           Family Details Form
         </h1>
 
-        {Object.keys(formData).map((key) => (
-          <div className="flex flex-col" key={key}>
-            <label
-              htmlFor={key}
-              className="text-sm font-medium text-gray-600 mb-1"
-            >
-              {key.replace(/([A-Z])/g, " $1")}
-            </label>
-            <input
-              type={
-                key === "FamilyIncome" || key === "FatherContactNumber" || key === "MotherContactNumber"
-                  ? "number"
-                  : key.includes("Number")
-                  ? "tel"
-                  : "text"
-              }
-              id={key}
-              name={key}
-              value={formData[key]}
-              onChange={handleChange}
-              placeholder={`Enter ${key.replace(/([A-Z])/g, " $1")}`}
-              className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
-            />
-            {errors[key] && (
-              <p className="text-red-500 text-xs mt-1">{errors[key]}</p>
-            )}
-          </div>
-        ))}
+        {Object.keys(formData).map((key) => {
+          if (key === "FamilyIncome") {
+            return (
+              <div className="flex flex-col" key={key}>
+                <label
+                  htmlFor={key}
+                  className="text-sm font-medium text-gray-600 mb-1"
+                >
+                  Family Income
+                </label>
+                <select
+                  id={key}
+                  name={key}
+                  value={formData[key]}
+                  onChange={handleChange}
+                  className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                >
+                  <option value="">Select Family Income</option>
+                  {incomeRanges.map((range, index) => (
+                    <option key={index} value={range}>
+                      {range}
+                    </option>
+                  ))}
+                </select>
+                {errors[key] && (
+                  <p className="text-red-500 text-xs mt-1">{errors[key]}</p>
+                )}
+              </div>
+            );
+          }
+
+          return (
+            <div className="flex flex-col" key={key}>
+              <label
+                htmlFor={key}
+                className="text-sm font-medium text-gray-600 mb-1"
+              >
+                {key.replace(/([A-Z])/g, " $1")}
+              </label>
+              <input
+                type={
+                  key === "FatherContactNumber" || key === "MotherContactNumber"
+                    ? "tel"
+                    : "text"
+                }
+                id={key}
+                name={key}
+                value={formData[key]}
+                onChange={handleChange}
+                placeholder={`Enter ${key.replace(/([A-Z])/g, " $1")}`}
+                className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+              />
+              {errors[key] && (
+                <p className="text-red-500 text-xs mt-1">{errors[key]}</p>
+              )}
+            </div>
+          );
+        })}
 
         <div className="flex justify-between items-center">
           <button
-            type="submit"
-            className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200"
+            type="button"
+            onClick={() => navigate(-1)}
+            className="w-1/3 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 rounded-lg transition duration-200"
           >
-           { dataExist ? "Update" : "Next"}
+            Previous
+          </button>
+          <button
+            type="submit"
+            className="w-2/3 bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200 ml-2"
+          >
+            {checkUrl ?  "Next" : "Submit"}
           </button>
         </div>
 
         {submitMessage && (
           <p
             className={`text-sm text-center mt-4 ${
-              submitMessage.includes("successfully")
+              submitMessage=== "Form updated successfully!" ||
+              submitMessage=== "Form submitted successfully!"
                 ? "text-green-500"
                 : "text-red-500"
             }`}

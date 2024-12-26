@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "../../api/axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const BasicDetailsForm = () => {
   const navigate = useNavigate();
+
+  const location = useLocation();
+  const [checkUrl, setCheckUrl] = useState("");
 
   const [formData, setFormData] = useState({
     dob: "",
@@ -46,7 +49,13 @@ const BasicDetailsForm = () => {
     };
 
     fetchBasicDetails();
+    setCheckUrl(location.pathname==="/basicDetailsForm");
+    console.log("checkUrl", location.pathname);
+    console.log("CKeckUrl", checkUrl);
   }, []);
+  useEffect(() => {
+    console.log("Form checkUrl form useEffect", checkUrl);
+  }, [checkUrl])
 
   const validateForm = () => {
     let formErrors = {};
@@ -89,7 +98,7 @@ const BasicDetailsForm = () => {
             : "Basic details submitted successfully!"
         );
 
-        if (!dataExist) {
+        if (checkUrl) {
           navigate("/batchDetailsForm");
         }
       } catch (error) {
@@ -203,7 +212,7 @@ const BasicDetailsForm = () => {
             type="submit"
             className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200"
           >
-            {dataExist ? "Update" : "Next"}
+            {checkUrl ?"Next" : "Update" }
           </button>
         </div>
 

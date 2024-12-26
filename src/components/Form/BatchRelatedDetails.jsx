@@ -1,28 +1,48 @@
 import React, { useState, useEffect } from "react";
 import axios from "../../api/axios";
-import { useNavigate } from "react-router-dom";
+import { data, useLocation, useNavigate } from "react-router-dom";
 
 const BatchRelatedDetailsForm = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [checkUrl, setCheckUrl] = useState("");
 
   const [formData, setFormData] = useState({
+    classForAdmission: "",
     preferredBatch: "",
     subjectCombination: "",
-    sessionStartDate: "",
   });
   const [dataExist, setDataExist] = useState(false);
 
   const [errors, setErrors] = useState({
+    classForAdmission: "",
     preferredBatch: "",
     subjectCombination: "",
-    sessionStartDate: "",
   });
   const [submitMessage, setSubmitMessage] = useState("");
 
   // Options for select dropdowns
-  const batchOptions = ["Batch 1", "Batch 2", "Batch 3", "Batch 4"];
-  const subjectOptions = ["PCM", "PCB", "PCMB"];
-  const sessionYearOptions = ["2024", "2025", "2026", "2027"];
+  const batchOptions =
+    formData.classForAdmission <= 10
+      ? ["12-12-2024", "13-01-2025", "24-01-2025", "25-01-2025"]
+      : ["16-12-2024", "17-01-2025", "28-01-2025", "29-01-2025"];
+
+  let subjectOptions =
+    formData.classForAdmission >= 5 && formData.classForAdmission <= 10
+      ? [""]
+      : ["PCM", "PCB"];
+  const convertToRoman = (num) => {
+    const romanNumerals = {
+      6: "VI",
+      7: "VII",
+      8: "VIII",
+      9: "IX",
+      10: "X",
+      11: "XI",
+      12: "XII",
+    };
+    return romanNumerals[num];
+  };
 
   // Fetch initial form data
   useEffect(() => {
@@ -30,20 +50,17 @@ const BatchRelatedDetailsForm = () => {
       try {
         const response = await axios.get("/form/batchRelatedDetails/getForm");
         const data = response.data;
-        console.log("data hhh", data);
-        console.log("data.length", data.length);
-        if (data.length != 0) {
+        if (data.length !== 0) {
           setDataExist(true);
         }
-        console.log("DATA", data);
         if (data.length > 0) {
-          const sessionYear = new Date(data[0].sessionStartDate)
-            .getFullYear()
-            .toString();
+          // const sessionYear = new Date(data[0].sessionStartDate)
+          //   .getFullYear()
+          //   .toString();
           setFormData({
             preferredBatch: data[0].preferredBatch,
             subjectCombination: data[0].subjectCombination,
-            sessionStartDate: sessionYear,
+            classForAdmission: data[0].classForAdmission,
           });
         }
       } catch (error) {
@@ -52,21 +69,22 @@ const BatchRelatedDetailsForm = () => {
     };
 
     fetchBatchData();
+    setCheckUrl(location.pathname === "/batchDetailsForm");
   }, []);
 
   // Validate form fields
-
   const validateForm = () => {
     let formErrors = {};
     let isValid = true;
 
+    console.log("formData", formData);
     Object.keys(formData).forEach((key) => {
-      if (!formData[key].trim()) {
-        console.log("key", key);
-        formErrors[key] = `${key.replace(/([A-Z])/g, " $1")} is required`;
-        console.log("formErrors", formErrors[key]);
-        console.log("key", key);
-        isValid = false;
+      if (!(key === "subjectCombination" && formData.classForAdmission <= 10)) {
+        console.log("formData[key].trim() 2", formData[key]?.toString().trim());
+        if (!formData[key]?.toString().trim()) {
+          formErrors[key] = `${key.replace(/([A-Z])/g, " $1")} is required`;
+          isValid = false;
+        }
       }
     });
 
@@ -77,8 +95,6 @@ const BatchRelatedDetailsForm = () => {
   // Handle field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log("value", value);
-    console.log("name", name);
     setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
 
     if (value.trim()) {
@@ -88,45 +104,34 @@ const BatchRelatedDetailsForm = () => {
 
   useEffect(() => {
     console.log("formData", formData);
-  }, []);
+  }, [formData]);
 
   // Handle form submission
   const onSubmit = async (e) => {
     e.preventDefault();
-    console.log("dataExist", validateForm());
 
     if (validateForm()) {
       try {
-        console.log("dataExist", dataExist);
         const url = dataExist
           ? "/form/batchRelatedDetails/updateForm"
           : "/form/batchRelatedDetails/addForm";
-        console.log("url", url);
         const method = dataExist ? axios.patch : axios.post;
 
         const response = await method(url, formData);
         setSubmitMessage(
-          formData.preferredBatch
+          dataExist
             ? "Batch related details updated successfully!"
             : "Batch related details submitted successfully!"
         );
-        console.log("response", response);
-        
-        if (dataExist) {
+
+        if (checkUrl) {
+          navigate("/familyDetailsForm");
+        } else {
           setFormData({
-            preferredBatch: response.data.preferredBatch,
-            subjectCombination: response.data.subjectCombination,
-            sessionStartDate: response.data.sessionStartDate,
-          })
-        }
-        // Reset form data after successful submission
-        setFormData({
-          preferredDatch: "",
-          subjectCombination: "",
-          sessionStartDate: "",
-        });
-        if (!dataExist) {
-          navigate("/educationalDetailsForm");
+            preferredBatch: "",
+            subjectCombination: "",
+            classForAdmission: "",
+          });
         }
       } catch (error) {
         console.error("Error submitting form:", error);
@@ -144,6 +149,38 @@ const BatchRelatedDetailsForm = () => {
         <h1 className="text-2xl font-bold text-center text-indigo-600">
           Batch Related Details Form
         </h1>
+
+        {/* Class  for admission*/}
+        <div className="flex flex-col">
+          <label
+            htmlFor="classForAdmission"
+            className="text-sm font-medium text-gray-600 mb-1"
+          >
+            Class
+          </label>
+          <select
+            id="classForAdmission"
+            name="classForAdmission"
+            value={formData.classForAdmission}
+            onChange={handleChange}
+            placeholder="Select Class for adminssion"
+            className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+          >
+            <option className="text-gray-200" disabled selected hidden value="">
+              Select Class for adminssion
+            </option>
+            {Array.from({ length: 7 }, (_, i) => i + 6).map((classNum) => (
+              <option key={classNum} value={classNum}>
+                {convertToRoman(classNum)}
+              </option>
+            ))}
+          </select>
+          {errors.classForAdmission && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.classForAdmission}
+            </p>
+          )}
+        </div>
 
         {/* Preferred Batch */}
         <div className="flex flex-col">
@@ -173,7 +210,7 @@ const BatchRelatedDetailsForm = () => {
         </div>
 
         {/* Subject Combination */}
-        <div className="flex flex-col">
+        {formData.classForAdmission >=11 &&  <div className="flex flex-col">
           <label
             htmlFor="subjectCombination"
             className="text-sm font-medium text-gray-600 mb-1"
@@ -187,7 +224,9 @@ const BatchRelatedDetailsForm = () => {
             onChange={handleChange}
             className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
           >
-            <option disabled >Select Subject Combination</option>
+            <option disabled value="">
+              Select Subject Combination
+            </option>
             {subjectOptions.map((subject, index) => (
               <option key={index} value={subject}>
                 {subject}
@@ -199,44 +238,22 @@ const BatchRelatedDetailsForm = () => {
               {errors.subjectCombination}
             </p>
           )}
-        </div>
+        </div>}
 
-        {/* Session Start Date */}
-        <div className="flex flex-col">
-          <label
-            htmlFor="sessionStartDate"
-            className="text-sm font-medium text-gray-600 mb-1"
-          >
-            Session Start Date
-          </label>
-          <select
-            id="sessionStartDate"
-            name="sessionStartDate"
-            value={formData.sessionStartDate}
-            onChange={handleChange}
-            className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
-          >
-            <option disabled >Select Session Start Date</option>
-            {sessionYearOptions.map((year, index) => (
-              <option key={index} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
-          {errors.sessionStartDate && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.sessionStartDate}
-            </p>
-          )}
-        </div>
-
-        {/* Submit Button */}
+        {/* Submit and Previous Buttons */}
         <div className="flex justify-between items-center">
           <button
-            type="submit"
-            className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200"
+            type="button"
+            onClick={() => navigate(-1)}
+            className="w-1/3 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 rounded-lg transition duration-200"
           >
-            {dataExist ? "Update" : "Next"}
+            Previous
+          </button>
+          <button
+            type="submit"
+            className="w-2/3 bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200 ml-2"
+          >
+            {checkUrl ? "Next" : "Update"}
           </button>
         </div>
 
@@ -244,7 +261,7 @@ const BatchRelatedDetailsForm = () => {
         {submitMessage && (
           <p
             className={`text-sm text-center mt-4 ${
-              submitMessage.includes("successfully")
+              submitMessage === "Batch related details updated successfully!"
                 ? "text-green-500"
                 : "text-red-500"
             }`}
