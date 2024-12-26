@@ -18,6 +18,8 @@ import store from './redux/store';
 import ForgotPassword from "./components/ForgetPassword";
 import ResetPassword from "./components/ResetPassword";
 import ResultPage from "./components/ResultPage";
+import FormDetailPage from "./components/FormDetailPage";
+import EditUserDetails from "./components/EditUserDetails";
 
 function App() {
   return (
@@ -39,6 +41,8 @@ function App() {
           <Route path="/forgetPassword" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="result" element={<ResultPage/>} />
+          <Route path="/FormDetailPage" element={<PrivateRoute component={FormDetailPage} />} />
+          <Route path="/resultDetails" element={<PrivateRoute component={ResultPage} />} />
           {/* <Route path = "/formDetailsPage" element={<FormDetailPage />}/> */}
          {/* <Route path = "/dashboard" element={<Dashboard />} /> */}
         </Routes>

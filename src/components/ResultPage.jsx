@@ -1,4 +1,5 @@
 import React from "react";
+import DashboardSidebar from "./DashboardSidebar";
 
 const ResultPage = () => {
 const resultDetails = async()=>{
@@ -6,8 +7,12 @@ const resultDetails = async()=>{
 }
 
   return (
-    <div className="flex justify-center items-center ">
-      <div className="flex flex-col justify-center items-center shadow-lg p-6 rounded-lg">
+    <div className="grid grid-cols-12 ">
+
+      <div className="col-span-2">
+        <DashboardSidebar/>
+      </div>
+      <div className="col-span-10 flex flex-col justify-center items-center shadow-lg p-6 rounded-lg">
         
         Result
       </div>

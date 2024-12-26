@@ -7,6 +7,7 @@ const BasicDetailsForm = () => {
 
   const location = useLocation();
   const [checkUrl, setCheckUrl] = useState("");
+  const pathLocation = location.pathname;
 
   const [formData, setFormData] = useState({
     dob: "",
@@ -49,13 +50,13 @@ const BasicDetailsForm = () => {
     };
 
     fetchBasicDetails();
-    setCheckUrl(location.pathname==="/basicDetailsForm");
+    setCheckUrl(location.pathname === "/basicDetailsForm");
     console.log("checkUrl", location.pathname);
     console.log("CKeckUrl", checkUrl);
   }, []);
   useEffect(() => {
     console.log("Form checkUrl form useEffect", checkUrl);
-  }, [checkUrl])
+  }, [checkUrl]);
 
   const validateForm = () => {
     let formErrors = {};
@@ -109,7 +110,11 @@ const BasicDetailsForm = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-50 to-indigo-50">
+    <div
+      className={`${
+        pathLocation === "/basicDetailsForm" && "min-h-screen"
+      } flex items-center justify-center  bg-gradient-to-r from-blue-50 to-indigo-50`}
+    >
       <form
         className="w-full max-w-lg bg-white shadow-lg rounded-lg p-6 space-y-6"
         onSubmit={onSubmit}
@@ -120,7 +125,10 @@ const BasicDetailsForm = () => {
 
         {/* Date of Birth */}
         <div className="flex flex-col">
-          <label htmlFor="dob" className="text-sm font-medium text-gray-600 mb-1">
+          <label
+            htmlFor="dob"
+            className="text-sm font-medium text-gray-600 mb-1"
+          >
             Date of Birth
           </label>
           <input
@@ -131,12 +139,17 @@ const BasicDetailsForm = () => {
             onChange={handleChange}
             className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
           />
-          {errors.dob && <p className="text-red-500 text-xs mt-1">{errors.dob}</p>}
+          {errors.dob && (
+            <p className="text-red-500 text-xs mt-1">{errors.dob}</p>
+          )}
         </div>
 
         {/* Gender */}
         <div className="flex flex-col">
-          <label htmlFor="gender" className="text-sm font-medium text-gray-600 mb-1">
+          <label
+            htmlFor="gender"
+            className="text-sm font-medium text-gray-600 mb-1"
+          >
             Gender
           </label>
           <select
@@ -160,7 +173,10 @@ const BasicDetailsForm = () => {
 
         {/* Exam Name */}
         <div className="flex flex-col">
-          <label htmlFor="examName" className="text-sm font-medium text-gray-600 mb-1">
+          <label
+            htmlFor="examName"
+            className="text-sm font-medium text-gray-600 mb-1"
+          >
             Exam Name
           </label>
           <select
@@ -184,7 +200,10 @@ const BasicDetailsForm = () => {
 
         {/* Exam Date */}
         <div className="flex flex-col">
-          <label htmlFor="examDate" className="text-sm font-medium text-gray-600 mb-1">
+          <label
+            htmlFor="examDate"
+            className="text-sm font-medium text-gray-600 mb-1"
+          >
             Exam Date
           </label>
           <select
@@ -212,7 +231,7 @@ const BasicDetailsForm = () => {
             type="submit"
             className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200"
           >
-            {checkUrl ?"Next" : "Update" }
+            {checkUrl ? "Next" : "Update"}
           </button>
         </div>
 
