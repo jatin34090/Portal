@@ -1,13 +1,16 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const DashboardSidebar = () => {
   const navigate = useNavigate();
+  const location =  useLocation();
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/");
   };
+
+  
 
   return (
     <div className="bg-gray-900 text-white p-6 h-screen flex flex-col justify-between shadow-lg">
@@ -17,7 +20,7 @@ const DashboardSidebar = () => {
           <li>
             <Link
               to="/dashboard"
-              className="flex items-center text-gray-300 hover:text-white hover:bg-gray-700 px-4 py-2 rounded-md"
+              className={`${location.pathname === "/dashboard" ? "bg-gray-600" : ""} flex items-center text-gray-300 hover:text-white hover:bg-gray-700 px-4 py-2 rounded-md`}
             >
               📈 <span className="ml-2">View User Details</span>
             </Link>
@@ -25,7 +28,7 @@ const DashboardSidebar = () => {
           <li>
             <Link
               to="/FormDetailPage"
-              className="flex items-center text-gray-300 hover:text-white hover:bg-gray-700 px-4 py-2 rounded-md"
+              className={`${location.pathname === "/FormDetailPage" ? "bg-gray-600" : ""} flex items-center text-gray-300 hover:text-white hover:bg-gray-700 px-4 py-2 rounded-md`}
             >
               ✍️ <span className="ml-2">Edit Form Details</span>
             </Link>
@@ -33,7 +36,7 @@ const DashboardSidebar = () => {
           <li>
             <Link
               to="/resultDetails"
-              className="flex items-center text-gray-300 hover:text-white hover:bg-gray-700 px-4 py-2 rounded-md"
+              className={`${location.pathname === "/resultDetails" ? "bg-gray-600" : ""} flex items-center text-gray-300 hover:text-white hover:bg-gray-700 px-4 py-2 rounded-md`}
             >
               📊 <span className="ml-2">Result Details</span>
             </Link>

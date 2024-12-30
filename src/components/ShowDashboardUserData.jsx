@@ -18,6 +18,7 @@ const ShowDashboardUserData = () => {
       const response = await axios.get("/students/getStudentsById");
       setUserDetails(response.data);
       setUpdatedDetails(response.data);
+      console.log("User details fetched:", response.data);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching user details:", error);
@@ -74,7 +75,9 @@ const ShowDashboardUserData = () => {
           {Object.keys(updatedDetails).map(
             (key) =>
               key !== "role" &&
-              key !== "phone" && (
+              key !== "phone" && 
+              key !== "admitCard" &&
+              (
                 <div className="mb-5" key={key}>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     {key.charAt(0).toUpperCase() + key.slice(1)}
@@ -102,7 +105,7 @@ const ShowDashboardUserData = () => {
           {Object.keys(userDetails).map(
             (key) =>
               key !== "paymentStatus" &&
-              key !== "admitCardStatus" && (
+              key !== "admitCard" && (
                 <p className="text-gray-700 mb-4" key={key}>
                   <span className="font-semibold text-gray-800">
                     {key.charAt(0).toUpperCase() + key.slice(1)}:

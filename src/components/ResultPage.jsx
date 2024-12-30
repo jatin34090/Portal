@@ -3,7 +3,11 @@ import DashboardSidebar from "./DashboardSidebar";
 
 const ResultPage = () => {
 const resultDetails = async()=>{
-    const response = await axios.get("/students/")
+    const response = await axios.get("/students/getResult");
+    console.log("response of resultDetails", response);
+    
+
+
 }
 
   return (

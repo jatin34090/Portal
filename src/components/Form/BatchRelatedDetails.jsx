@@ -14,6 +14,20 @@ const BatchRelatedDetailsForm = () => {
     subjectCombination: "",
   });
   const [dataExist, setDataExist] = useState(false);
+  const convertToNumber = (romanNumeral) => {
+    const romanToNumber = {
+      VI: 6,
+      VII: 7,
+      VIII: 8,
+      IX: 9,
+      X: 10,
+      XI: 11,
+      XII: 12,
+    };
+
+    return romanToNumber[romanNumeral];
+  };
+
 
   const [errors, setErrors] = useState({
     classForAdmission: "",
@@ -29,9 +43,9 @@ const BatchRelatedDetailsForm = () => {
       : ["16-12-2024", "17-01-2025", "28-01-2025", "29-01-2025"];
 
   let subjectOptions =
-    formData.classForAdmission >= 5 && formData.classForAdmission <= 10
-      ? [""]
-      : ["PCM", "PCB"];
+  convertToNumber(formData.classForAdmission )>= 6  && convertToNumber(formData.classForAdmission) <= 10
+      ? ["Foundation"]
+      : ["Engineering", "Medical"];
   const convertToRoman = (num) => {
     const romanNumerals = {
       6: "VI",
@@ -51,6 +65,7 @@ const BatchRelatedDetailsForm = () => {
       try {
         const response = await axios.get("/form/batchRelatedDetails/getForm");
         const data = response.data;
+
         if (data.length !== 0) {
           setDataExist(true);
         }
@@ -78,10 +93,8 @@ const BatchRelatedDetailsForm = () => {
     let formErrors = {};
     let isValid = true;
 
-    console.log("formData", formData);
     Object.keys(formData).forEach((key) => {
       if (!(key === "subjectCombination" && formData.classForAdmission <= 10)) {
-        console.log("formData[key].trim() 2", formData[key]?.toString().trim());
         if (!formData[key]?.toString().trim()) {
           formErrors[key] = `${key.replace(/([A-Z])/g, " $1")} is required`;
           isValid = false;
@@ -110,6 +123,7 @@ const BatchRelatedDetailsForm = () => {
   // Handle form submission
   const onSubmit = async (e) => {
     e.preventDefault();
+    console.log("Button Clicked", formData);
 
     if (validateForm()) {
       try {
@@ -171,7 +185,7 @@ const BatchRelatedDetailsForm = () => {
               Select Class for adminssion
             </option>
             {Array.from({ length: 7 }, (_, i) => i + 6).map((classNum) => (
-              <option key={classNum} value={classNum}>
+              <option key={classNum} value={convertToRoman(classNum)}>
                 {convertToRoman(classNum)}
               </option>
             ))}
@@ -211,7 +225,7 @@ const BatchRelatedDetailsForm = () => {
         </div>
 
         {/* Subject Combination */}
-        {formData.classForAdmission >= 11 && (
+        {
           <div className="flex flex-col">
             <label
               htmlFor="subjectCombination"
@@ -229,7 +243,9 @@ const BatchRelatedDetailsForm = () => {
               <option disabled value="">
                 Select Subject Combination
               </option>
-              {subjectOptions.map((subject, index) => (
+              {console.log("subjectOptions", subjectOptions)}
+              
+              {subjectOptions && subjectOptions.map((subject, index) => (
                 <option key={index} value={subject}>
                   {subject}
                 </option>
@@ -241,7 +257,7 @@ const BatchRelatedDetailsForm = () => {
               </p>
             )}
           </div>
-        )}
+        }
 
         {/* Submit and Previous Buttons */}
         <div className="flex justify-between items-center">

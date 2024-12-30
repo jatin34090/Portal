@@ -35,6 +35,7 @@ const BasicDetailsForm = () => {
       try {
         const response = await axios.get("/form/basicDetails/getForm");
         const data = response.data;
+        console.log("data", data);
         if (data.length !== 0) {
           setDataExist(true);
           setFormData({
@@ -53,6 +54,7 @@ const BasicDetailsForm = () => {
     setCheckUrl(location.pathname === "/basicDetailsForm");
     console.log("checkUrl", location.pathname);
     console.log("CKeckUrl", checkUrl);
+    console.log("formData", formData);
   }, []);
   useEffect(() => {
     console.log("Form checkUrl form useEffect", checkUrl);
@@ -71,6 +73,17 @@ const BasicDetailsForm = () => {
 
     setErrors(formErrors);
     return isValid;
+  };
+
+  const dateFrometter = (date) => {
+    console.log("date", date);
+
+    // Original date string
+
+    // Replace dashes with slashes
+    let formattedDate = date.replace(/-/g, "/");
+    console.log(formattedDate); // Output: 07/12/2024
+    return formattedDate;
   };
 
   const handleChange = (e) => {
