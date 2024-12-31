@@ -19,7 +19,7 @@ const payment = () => {
             name: "Acme Corp",
             description: "Test Payment",
             order_id: response.data.id,
-            callback_url: "http://localhost:5000/api/paymentverification",
+            callback_url: "http://localhost:5173/dashboard",
 
             prefill: {
                 name: "jatin gupta",
@@ -36,7 +36,7 @@ const payment = () => {
     }
 
     return (
-        <div>payment</div>
+        <div onClick={checkoutHandler}>payment</div>
     )
 }
 export default payment

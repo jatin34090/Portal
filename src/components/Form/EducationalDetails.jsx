@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "../../api/axios";
-import { useLocation, useNavigate } from "react-router-dom";
+import { data, useLocation, useNavigate } from "react-router-dom";
+import useRazorpay from "react-razorpay";
 
 const EducationalDetailsForm = () => {
   const navigate = useNavigate();
@@ -60,7 +61,45 @@ const EducationalDetailsForm = () => {
     fetchData();
     setCheckUrl(pathLocation === "/educationalDetailsForm");
   }, []);
+  const checkoutHandler = async () => {
+    const {
+      data: { key },
+    } = await axios.get("/payment/getKey");
+    // console.log("key", key);
 
+    const response = await axios.post("/payment/checkout");
+    console.log("response", response);
+    console.log("response.data.order.amount", response.data.order.amount);
+
+    const options = {
+      key,
+      amount: response.data.order.amount,
+      currency: response.data.currency,
+      name: "Acme Corp",
+      description: "Test Payment",
+      order_id: response.data.id,
+      callback_url: "http://localhost:5000/api/payment/paymentverification",
+      redirect: true,
+
+
+      prefill: {
+        name: "jatin gupta",
+        email: "5Yt0d@example.com",
+        contact: "9999999999",
+      },
+      theme: {
+        color: "#3399cc",
+      },
+    };
+
+    const razorpay = new window.Razorpay(options);
+    razorpay.open();
+    console.log("razorpay data", razorpay);
+    // await axios("/payment/paymentverification", {});
+    const data = await razorpay.on("payment.failed", function (response) {
+      console.log(response.error);
+    });
+  };
   // Handle input changes and error checking
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -115,10 +154,10 @@ const EducationalDetailsForm = () => {
         setSubmitMessage("Form submitted successfully!");
         if (checkUrl) {
           console.log("GO on the dashboard page");
-          navigate("/dashboard");
+          await checkoutHandler();
         }
       } catch (error) {
-        setSubmitMessage(error.response.data);
+        setSubmitMessage(error.response);
         console.error("Error submitting form", error);
       }
     }
@@ -143,7 +182,11 @@ const EducationalDetailsForm = () => {
   }
 
   return (
-    <div className={`${pathLocation === "/educationalDetailsForm" && "min-h-screen"} flex items-center justify-center bg-gradient-to-r from-blue-50 to-indigo-50`}>
+    <div
+      className={`${
+        pathLocation === "/educationalDetailsForm" && "min-h-screen"
+      } flex items-center justify-center bg-gradient-to-r from-blue-50 to-indigo-50`}
+    >
       <form
         className="w-full max-w-lg bg-white shadow-lg rounded-lg p-6 space-y-6"
         onSubmit={onSubmit}
@@ -231,7 +274,7 @@ const EducationalDetailsForm = () => {
         ))}
 
         <div className="flex justify-between items-center">
-          {pathLocation==="/educationalDetailsForm" && (
+          {pathLocation === "/educationalDetailsForm" && (
             <button
               type="button"
               onClick={() => navigate(-1)}
@@ -242,16 +285,18 @@ const EducationalDetailsForm = () => {
           )}
           <button
             type="submit"
-            className= {`${pathLocation==="/educationalDetailsForm" ?  "w-2/3" : "w-full"} bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200 ml-2`}
+            className={`${
+              pathLocation === "/educationalDetailsForm" ? "w-2/3" : "w-full"
+            } bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200 ml-2`}
           >
-            {checkUrl ? "Next" : "Update"}
+            {checkUrl ? "Payment" : "Update"}
           </button>
         </div>
 
         {submitMessage && (
           <p
             className={`text-sm text-center mt-4 ${
-              submitMessage.includes("successfully")
+              submitMessage === "Form submitted successfully!"
                 ? "text-green-500"
                 : "text-red-500"
             }`}
