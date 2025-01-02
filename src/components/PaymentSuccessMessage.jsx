@@ -44,8 +44,7 @@ const PaymentSuccessMessage = () => {
       <div className="flex flex-col justify-center items-center shadow-lg p-6 rounded-lg">
         <img src={tickCircle} alt="" />
         <div className="text-2xl p-10">
-          {console.log(payment_id)}
-          {` Your Payment is Successfull. Payment ID : ${payment_id}`}
+          {` Your Payment is Successfull. Order ID : ${payment_id}`}
         </div>
         <span>Thank you for your payment.</span>
       </div>

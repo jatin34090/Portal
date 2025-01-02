@@ -1,6 +1,22 @@
+import { useEffect, useState } from "react";
 import ErrorIcon from "../assets/errorIcon.png"
 
 const ShowMessage = ({message}) => {
+
+  const [show, setShow] = useState(true);
+  const timer = setTimeout(() => {
+    setShow(false);
+  }, 5000);
+  
+
+  useEffect(()=>{
+
+  })
+
+const error = async ()=>{
+  
+}
+
   return (
     <>
     
