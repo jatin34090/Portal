@@ -1,7 +1,7 @@
 import axios from "../api/axios";
 
-const payment = () => {
-  const checkoutHandler = async () => {
+
+const checkoutHandler = async () => {
     const {
       data: { key },
     } = await axios.get("/payment/getKey");
@@ -33,9 +33,10 @@ const payment = () => {
         console.log("Payment successful", response);
 
         // Optionally, verify the payment on your backend
-
-        // Redirect to the success page
-        window.location.href = `http://localhost:5173/payment/success/${response.razorpay_order_id}`;
+        
+          // Redirect to the success page
+          window.location.href = `http://localhost:5173/payment/success/${response.razorpay_order_id}`;
+       
       },
     };
 
@@ -46,6 +47,5 @@ const payment = () => {
     // await axios("/payment/paymentverification", {});
   };
 
-  return <div onClick={checkoutHandler}>payment</div>;
-};
-export default payment;
+
+  export default checkoutHandler;

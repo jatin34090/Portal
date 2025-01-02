@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import axios from "../../api/axios";
 import { data, useLocation, useNavigate } from "react-router-dom";
 import useRazorpay from "react-razorpay";
+import checkoutHandler from "../../utils/Razorpay";
 
 const EducationalDetailsForm = () => {
+  const [paymentStatus, setPaymentStatus] = useState("Pending");
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     LastSchoolName: "",
@@ -57,49 +59,62 @@ const EducationalDetailsForm = () => {
         setLoading(false);
       }
     };
+    const checkPaymentStatus = async () => {
+      const response = await axios.get("/students/getStudentsById");
+
+      setPaymentStatus(() => (response.data.paymentId ? "Paid" : "Pending"));
+      console.log("response form educationalPage", response);
+    };
+    checkPaymentStatus();
 
     fetchData();
     setCheckUrl(pathLocation === "/educationalDetailsForm");
   }, []);
-  const checkoutHandler = async () => {
-    const {
-      data: { key },
-    } = await axios.get("/payment/getKey");
-    // console.log("key", key);
+  // const checkoutHandler = async () => {
+  //   const {
+  //     data: { key },
+  //   } = await axios.get("/payment/getKey");
+  //   console.log("key", key);
 
-    const response = await axios.post("/payment/checkout");
-    console.log("response", response);
-    console.log("response.data.order.amount", response.data.order.amount);
+  //   const response = await axios.post("/payment/checkout");
+  //   console.log("response", response);
+  //   console.log("response.data.order.amount", response.data.order.amount);
+  //   console.log("response.data.order.currency", response.data.order.currency);
+  //   console.log("response.data.currency", response.data.currency);
 
-    const options = {
-      key,
-      amount: response.data.order.amount,
-      currency: response.data.currency,
-      name: "Acme Corp",
-      description: "Test Payment",
-      order_id: response.data.id,
-      callback_url: "http://localhost:5000/api/payment/paymentverification",
-      redirect: true,
+  //   const options = {
+  //     key,
+  //     amount: response.data.order.amount,
+  //     currency: response.data.order.currency,
+  //     name: "Acme Corp",
+  //     description: "Test Payment",
+  //     order_id: response.data.order.id,
+  //     callback_url: "http://localhost:5000/api/payment/paymentverification",
+  //     prefill: {
+  //       name: "jatin gupta",
+  //       email: "5Yt0d@example.com",
+  //       contact: "9999999999",
+  //     },
+  //     theme: {
+  //       color: "#c61d23",
+  //     },
+  //     handler: async function (response) {
+  //       console.log("Payment successful", response);
 
+  //       // Optionally, verify the payment on your backend
+        
+  //         // Redirect to the success page
+  //         window.location.href = `http://localhost:5173/payment/success/${response.razorpay_order_id}`;
+       
+  //     },
+  //   };
 
-      prefill: {
-        name: "jatin gupta",
-        email: "5Yt0d@example.com",
-        contact: "9999999999",
-      },
-      theme: {
-        color: "#3399cc",
-      },
-    };
+  //   const razorpay = new window.Razorpay(options);
+  //   razorpay.open();
 
-    const razorpay = new window.Razorpay(options);
-    razorpay.open();
-    console.log("razorpay data", razorpay);
-    // await axios("/payment/paymentverification", {});
-    const data = await razorpay.on("payment.failed", function (response) {
-      console.log(response.error);
-    });
-  };
+  //   console.log("razorpay", razorpay);
+  //   // await axios("/payment/paymentverification", {});
+  // };
   // Handle input changes and error checking
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -154,7 +169,11 @@ const EducationalDetailsForm = () => {
         setSubmitMessage("Form submitted successfully!");
         if (checkUrl) {
           console.log("GO on the dashboard page");
-          await checkoutHandler();
+          if (paymentStatus === "Paid") {
+            navigate("/dashboard");
+          } else {
+            await checkoutHandler();
+          }
         }
       } catch (error) {
         setSubmitMessage(error.response);
@@ -289,7 +308,7 @@ const EducationalDetailsForm = () => {
               pathLocation === "/educationalDetailsForm" ? "w-2/3" : "w-full"
             } bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200 ml-2`}
           >
-            {checkUrl ? "Payment" : "Update"}
+            {checkUrl && paymentStatus === "Pending" ? "Payment" : "Update"}
           </button>
         </div>
 

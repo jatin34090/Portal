@@ -77,6 +77,7 @@ const ShowDashboardUserData = () => {
               key !== "role" &&
               key !== "phone" && 
               key !== "admitCard" &&
+              key !== "paymentId" &&
               (
                 <div className="mb-5" key={key}>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -105,7 +106,8 @@ const ShowDashboardUserData = () => {
           {Object.keys(userDetails).map(
             (key) =>
               key !== "paymentStatus" &&
-              key !== "admitCard" && (
+              key !== "admitCard" &&
+              key !== "paymentId" && (
                 <p className="text-gray-700 mb-4" key={key}>
                   <span className="font-semibold text-gray-800">
                     {key.charAt(0).toUpperCase() + key.slice(1)}:
