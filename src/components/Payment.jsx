@@ -39,10 +39,15 @@ const payment = () => {
       },
     };
 
+    console.log("options", options);
+
+
     const razorpay = new window.Razorpay(options);
+
     razorpay.open();
 
-    console.log("razorpay", razorpay);
+
+    console.log("razorpay object", razorpay);
     // await axios("/payment/paymentverification", {});
   };
 
