@@ -56,7 +56,7 @@ export default function LoginRight() {
         const response = await axios.post("/auth/student_login", formData);
         setSubmitMessage("Login successful!");
         login();
-        localStorage.setItem("token", response.data.token);
+        document.cookie = `token=${response.data.token}`;
         navigate("/dashboard");
       } catch (error) {
         setSubmitMessage(error.response.data);

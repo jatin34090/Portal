@@ -6,10 +6,11 @@ const DashboardSidebar = () => {
   const location =  useLocation();
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    // Clear the cookie by setting it with an expired date
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     navigate("/");
   };
-
+  
   
 
   return (

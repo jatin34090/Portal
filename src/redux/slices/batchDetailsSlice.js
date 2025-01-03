@@ -1,30 +1,53 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from '../../api/axios';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "../../api/axios";
 
+// Async thunk for fetching batch-related details
 export const fetchBatchDetails = createAsyncThunk(
-  'batchDetails/fetchBatchDetails',
+  "batchDetails/fetchBatchDetails",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get('/students/batchDetails');
-      return response.data;
-      console.log(response.data);
+      const response = await axios.get("/form/batchRelatedDetails/getForm");
+      const data = response.data;
+      if (data.length > 0) {
+        return {
+          dataExist: true,
+          formData: {
+            preferredBatch: data[0]?.preferredBatch || "",
+            subjectCombination: data[0]?.subjectCombination || "",
+            classForAdmission: data[0]?.classForAdmission || "",
+          },
+        };
+      }
+      return {
+        dataExist: false,
+        formData: {
+          preferredBatch: "",
+          subjectCombination: "",
+          classForAdmission: "",
+        },
+      };
     } catch (error) {
-      return rejectWithValue(error.response?.data || 'Error fetching batch details');
+      return rejectWithValue(error.response?.data || "Failed to fetch data");
     }
   }
 );
 
-
+// Slice definition
 const batchDetailsSlice = createSlice({
-  name: 'batchDetails',
+  name: "batchDetails",
   initialState: {
-    data: null,
+    formData: {
+      classForAdmission: "",
+      preferredBatch: "",
+      subjectCombination: "",
+    },
+    dataExist: false, // Flag to check if data exists in the database
     loading: false,
     error: null,
   },
   reducers: {
     updateBatchDetails(state, action) {
-      state.data = { ...state.data, ...action.payload };
+      state.formData = { ...state.formData, ...action.payload };
     },
   },
   extraReducers: (builder) => {
@@ -35,7 +58,8 @@ const batchDetailsSlice = createSlice({
       })
       .addCase(fetchBatchDetails.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = action.payload;
+        state.formData = action.payload.formData;
+        state.dataExist = action.payload.dataExist;
       })
       .addCase(fetchBatchDetails.rejected, (state, action) => {
         state.loading = false;

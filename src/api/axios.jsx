@@ -17,8 +17,10 @@ const instance = axios.create({
 // Add a request interceptor to include the JWT token in headers
 instance.interceptors.request.use(
   (config) => {
+    console.log("with out regex", document.cookie);
 
-    const token = localStorage.getItem('token'); // Adjust based on how you store your token
+    const token = document.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, '$1');
+console.log("token", token);
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }

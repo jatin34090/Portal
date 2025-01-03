@@ -20,6 +20,7 @@ import ResetPassword from "./components/ResetPassword";
 import ResultPage from "./components/ResultPage";
 import FormDetailPage from "./components/FormDetailPage";
 import PaymentSuccessMessage from "./components/PaymentSuccessMessage";
+import Spinner from "./api/Spinner";
 
 function App() {
   return (

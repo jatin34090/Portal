@@ -1,48 +1,62 @@
 import React, { useEffect, useState } from "react";
 import axios from "../api/axios";
+import { updateUserDetails } from "../redux/slices/userDeailsSlice";
+import { fetchUserDetails } from "../redux/slices/userDeailsSlice";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 const ShowDashboardUserData = () => {
-  // States for user details and edit/update functionality
-  const [userDetails, setUserDetails] = useState({
-    name: "",
-    email: "",
-    phone: "",
-  });
-  const [updatedDetails, setUpdatedDetails] = useState({ ...userDetails });
+  const dispatch = useDispatch();
+  const { userData, loading } = useSelector((state) => state.userDetails);
+  const [errors, setErrors] = useState();
+
   const [editing, setEditing] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   // Fetch user details from API
-  const fetchUserDetails = async () => {
-    try {
-      const response = await axios.get("/students/getStudentsById");
-      setUserDetails(response.data);
-      setUpdatedDetails(response.data);
-      console.log("User details fetched:", response.data);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching user details:", error);
-      setLoading(false);
-    }
-  };
+  // const fetchUserDetails = async () => {
+  //   try {
+  //     const response = await axios.get("/students/getStudentsById");
+  // setUserDetails(response.data);
+  //     setUpdatedDetails(response.data);
+  //     console.log("User details fetched:", response.data);
+  //     setLoading(false);
+  //   } catch (error) {
+  //     console.error("Error fetching user details:", error);
+  //     setLoading(false);
+  //   }
+  // };
 
   // Handle input changes in the edit form
+
+  const validateData = () => {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userData.email)) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        email: "Email must be a valid email address",
+      }));
+      return false;
+    }
+    return true;
+  };
   const handleEditChange = (e) => {
     const { name, value } = e.target;
-    setUpdatedDetails({
-      ...updatedDetails,
-      [name]: value,
-    });
+
+    dispatch(updateUserDetails({ [name]: value }));
+    if (value.trim()) {
+      setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
+    }
   };
 
   // Handle updating user details
   const handleUpdateDetails = async () => {
+    if (!validateData()) return;
     try {
-      const response = await axios.patch("/students/editStudent", updatedDetails);
-      setUserDetails((prev) => ({ ...prev, ...updatedDetails }));
+      const response = await axios.patch("/students/editStudent", userData);
+      // setUserDetails((prev) => ({ ...prev, ...updatedDetails }));
       setEditing(false);
       console.log("Details updated successfully:", response.data);
     } catch (error) {
+      setErrors({ "error": error.response.data });
       console.error("Error updating user details:", error);
     }
   };
@@ -54,7 +68,8 @@ const ShowDashboardUserData = () => {
 
   // Fetch user details on component mount
   useEffect(() => {
-    fetchUserDetails();
+    dispatch(fetchUserDetails());
+    // fetchUserDetails();
   }, []);
 
   // Loading state
@@ -72,13 +87,9 @@ const ShowDashboardUserData = () => {
       {editing ? (
         <div>
           {/* Edit Form */}
-          {Object.keys(updatedDetails).map(
+          {Object.keys(userData).map(
             (key) =>
-              key !== "role" &&
-              key !== "phone" && 
-              key !== "admitCard" &&
-              key !== "paymentId" &&
-              (
+              (key == "name" || key == "email") && (
                 <div className="mb-5" key={key}>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     {key.charAt(0).toUpperCase() + key.slice(1)}
@@ -86,12 +97,19 @@ const ShowDashboardUserData = () => {
                   <input
                     type="text"
                     name={key}
-                    value={updatedDetails[key]}
+                    value={userData[key]}
                     onChange={handleEditChange}
                     className="p-3 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                   />
                 </div>
               )
+          )}
+          {errors && (
+            <div className="text-red-500 mb-4">
+              {Object.keys(errors).map((error) => (
+                <p key={error}>{errors[error]}</p>
+              ))}
+            </div>
           )}
           <button
             className="bg-indigo-500 hover:bg-indigo-600 text-white py-3 px-6 rounded-lg mt-4"
@@ -103,16 +121,17 @@ const ShowDashboardUserData = () => {
       ) : (
         <div>
           {/* View Mode */}
-          {Object.keys(userDetails).map(
+          {Object.keys(userData).map(
             (key) =>
               key !== "paymentStatus" &&
               key !== "admitCard" &&
-              key !== "paymentId" && (
+              key !== "paymentId" &&
+              key !== "result" && (
                 <p className="text-gray-700 mb-4" key={key}>
                   <span className="font-semibold text-gray-800">
                     {key.charAt(0).toUpperCase() + key.slice(1)}:
                   </span>{" "}
-                  {userDetails[key]}
+                  {userData[key]}
                 </p>
               )
           )}
