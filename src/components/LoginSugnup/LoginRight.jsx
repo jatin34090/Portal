@@ -70,7 +70,12 @@ export default function LoginRight() {
       className="flex flex-col gap-6 w-1/2 max-w-lg mx-auto p-6 bg-white shadow-lg rounded-lg justify-center border border-gray-200"
       onSubmit={onSubmit}
     >
-      <h2 className="text-2xl font-bold text-center text-indigo-600">Login</h2>
+      <h2
+        className="text-2xl font-bold text-center "
+        style={{ color: "#c61d23" }}
+      >
+        Login
+      </h2>
 
       <div className="flex flex-col items-start">
         <label htmlFor="email" className="text-gray-600">
@@ -121,6 +126,7 @@ export default function LoginRight() {
       <button
         type="submit"
         className="w-full py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all"
+        style={{ backgroundColor: "#c61d23" }}
       >
         Login
       </button>
@@ -130,6 +136,7 @@ export default function LoginRight() {
           Don't have an account?{" "}
           <button
             className="text-blue-500 font-medium hover:underline"
+            style={{color: "#c61d23"}}
             onClick={() => navigate("/signup")}
             type="button"
           >
@@ -137,8 +144,9 @@ export default function LoginRight() {
           </button>
         </p>
         <button
-          className="text-blue-500 font-medium hover:underline mt-2"
+          className=" font-medium hover:underline mt-2"
           onClick={() => navigate("/forgetPassword")}
+          style={{color: "#c61d23"}}
           type="button"
         >
           Forgot Password?

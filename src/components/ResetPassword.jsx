@@ -67,7 +67,9 @@ export default function ResetPassword() {
       onSubmit={handleSubmit}
       className="flex flex-col gap-6 w-1/2 max-w-lg mx-auto p-6 bg-white shadow-lg rounded-lg justify-center border border-gray-200"
     >
-      <h2 className="text-2xl font-bold text-center text-indigo-600">
+      <h2 className="text-2xl font-bold text-center"
+      style={{ color: "#c61d23" }}
+      >
         Reset Password
       </h2>
 
@@ -122,6 +124,8 @@ export default function ResetPassword() {
       <button
         type="submit"
         className="w-full py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all"
+        style={{
+          backgroundColor: "#c61d23",}}
       >
         Reset Password
       </button>

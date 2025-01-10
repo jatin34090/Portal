@@ -27,7 +27,7 @@ const BasicDetailsForm = () => {
   // Dropdown options
   const genderOptions = ["Male", "Female", "Other"];
   const examNameOptions = ["S.Dat", "Rise"];
-  const examDateOptions = ["2024-01-15", "2024-02-20", "2024-03-10"];
+  const examDateOptions = ["15-02-2025", "02-20-2025", "10-03-2025"];
 
   useEffect(() => {
     setCheckUrl(location.pathname === "/basicDetailsForm");
@@ -53,6 +53,7 @@ const BasicDetailsForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    console.log("name", name, "value", value);
     dispatch(updateBasicDetails({ [name]: value }));
 
     if (value.trim()) {
@@ -100,7 +101,7 @@ const BasicDetailsForm = () => {
           className="w-full max-w-lg bg-white shadow-lg rounded-lg p-6 space-y-6"
           onSubmit={onSubmit}
         >
-          <h1 className="text-2xl font-bold text-center text-indigo-600">
+          <h1 className="text-2xl font-bold text-center" style={{ color: "#c61d23" }}>
             Basic Details Form
           </h1>
 
@@ -211,7 +212,9 @@ const BasicDetailsForm = () => {
           <div className="flex justify-between items-center">
             <button
               type="submit"
-              className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200"
+              className="w-full hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200"
+
+              style={{ backgroundColor: "#c61d23" }}
             >
               {checkUrl ? "Next" : "Update"}
             </button>

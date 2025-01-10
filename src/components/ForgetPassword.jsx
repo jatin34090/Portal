@@ -34,7 +34,10 @@ export default function ForgotPassword() {
         className="bg-white p-6 rounded-lg shadow-md w-full max-w-md"
         onSubmit={handleForgotPassword}
       >
-        <h2 className="text-2xl font-bold text-indigo-600 text-center mb-4">
+        <h2
+          className="text-2xl font-bold text-indigo-600 text-center mb-4"
+          style={{ color: "#c61d23" }}
+        >
           Forgot Password
         </h2>
         <p className="text-gray-600 text-center mb-6">
@@ -59,6 +62,7 @@ export default function ForgotPassword() {
         <button
           type="submit"
           className="w-full py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all"
+          style={{ backgroundColor: "#c61d23" }}
         >
           Send Reset Link
         </button>

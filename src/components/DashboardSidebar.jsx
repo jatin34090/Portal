@@ -16,7 +16,7 @@ const DashboardSidebar = () => {
   return (
     <div className="bg-gray-900 text-white p-6 h-screen flex flex-col justify-between shadow-lg">
       <div>
-        <h2 className="text-2xl font-bold mb-6 text-indigo-400">Dashboard</h2>
+        <h2 className="text-2xl font-bold mb-6" style={{ color: "#c61d23"}}>Dashboard</h2>
         <ul className="space-y-4">
           <li>
             <Link

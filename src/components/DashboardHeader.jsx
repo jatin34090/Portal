@@ -34,6 +34,7 @@ const DashboardHeader = () => {
             target="_blank" // Open in a new tab
             rel="noopener noreferrer" // Security best practice
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-3"
+            style= {{ backgroundColor: "#c61d23" }}
           >
             Download Your Admit Card
           </a>

@@ -145,7 +145,7 @@ const BatchRelatedDetailsForm = () => {
           className="w-full max-w-lg bg-white shadow-lg rounded-lg p-6 space-y-6"
           onSubmit={onSubmit}
         >
-          <h1 className="text-2xl font-bold text-center text-indigo-600">
+          <h1 className="text-2xl font-bold text-center " style={{ color: "#c61d23" }} >
             Batch Related Details Form
           </h1>
 
@@ -263,7 +263,9 @@ const BatchRelatedDetailsForm = () => {
               type="submit"
               className={` ${
                 pathLocation === "/batchDetailsForm" ? "w-2/3" : "w-full"
-              } bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200 ml-2`}
+              }  hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200 ml-2`}
+
+              style={{ backgroundColor: "#c61d23" }}
             >
               {checkUrl ? "Next" : "Update"}
             </button>

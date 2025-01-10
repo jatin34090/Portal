@@ -77,7 +77,7 @@ const EducationalDetailsForm = () => {
         );
 
         if (checkUrl) {
-          navigate("/familyDetailsForm");
+          // navigate("/familyDetailsForm");
         }
       } catch (error) {
         console.error("Error submitting form:", error);
@@ -122,7 +122,7 @@ const EducationalDetailsForm = () => {
           className="w-full max-w-lg bg-white shadow-lg rounded-lg p-6 space-y-6"
           onSubmit={onSubmit}
         >
-          <h1 className="text-2xl font-bold text-center text-indigo-600">
+          <h1 className="text-2xl font-bold text-center " style={{color: "#c61d23"}}>
             Educational Details Form
           </h1>
 
@@ -219,6 +219,8 @@ const EducationalDetailsForm = () => {
               className={`${
                 pathLocation === "/educationalDetailsForm" ? "w-2/3" : "w-full"
               } bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200 ml-2`}
+
+              style={{backgroundColor: "#c61d23"}}
             >
               {checkUrl && paymentStatus === "Pending" ? "Payment" : "Update"}
             </button>

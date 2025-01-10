@@ -30,7 +30,10 @@ export default function SignupRight() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    setErrors((prevErrors) => ({ ...prevErrors, [name]: value ? "" : `${name} is required` }));
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: value ? "" : `${name} is required`,
+    }));
   };
 
   const validateForm = () => {
@@ -63,7 +66,7 @@ export default function SignupRight() {
     e.preventDefault();
     setSubmitMessage("");
     console.log("Button Clicked");
-    if(codeVerified === false){
+    if (codeVerified === false) {
       setSubmitMessage("Please Verify Your Phone Number");
     }
 
@@ -78,7 +81,6 @@ export default function SignupRight() {
         setSubmitMessage(error.response.data);
 
         console.error("Error submitting form", error);
-        
       }
     }
   };
@@ -86,7 +88,7 @@ export default function SignupRight() {
   const verifyPhoneNo = async () => {
     try {
       const response = await axios.post("/students/sendVerification", {
-        phone: `+91${formData.phone}`,
+        mobileNumber: `${formData.phone}`,
       });
       if (response.status === 200) {
         setShowCodeBox(true);
@@ -99,8 +101,8 @@ export default function SignupRight() {
   const checkVerificationCode = async () => {
     try {
       const response = await axios.post("/students/verifyNumber", {
-        phone: `+91${formData.phone}`,
-        code,
+        mobileNumber: `${formData.phone}`,
+        otp: code,
       });
       if (response.status === 200) {
         setSubmitMessage("Phone number verified successfully!");
@@ -114,16 +116,22 @@ export default function SignupRight() {
   return (
     <div className="flex bg-gradient-to-r from-blue-50 to-indigo-100">
       <form
-        className="w-full max-w-lg bg-white shadow-lg rounded-lg p-6 space-y-6"
+        className="w-full max-w-lg bg-white shadow-lg rounded-lg p-3 space-y-6"
         onSubmit={onSubmit}
       >
-        <h1 className="text-2xl font-bold text-center text-indigo-600">
+        <h1
+          className="text-2xl font-bold text-center"
+          style={{ color: "#c61d23" }}
+        >
           Create Your Account
         </h1>
 
         {/* Name Field */}
         <div className="flex flex-col">
-          <label htmlFor="name" className="text-sm font-medium text-gray-600 mb-1">
+          <label
+            htmlFor="name"
+            className="text-sm font-medium text-gray-600 mb-1"
+          >
             Name
           </label>
           <input
@@ -135,12 +143,17 @@ export default function SignupRight() {
             placeholder="Enter your name"
             className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
           />
-          {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+          {errors.name && (
+            <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+          )}
         </div>
 
         {/* Email Field */}
         <div className="flex flex-col">
-          <label htmlFor="email" className="text-sm font-medium text-gray-600 mb-1">
+          <label
+            htmlFor="email"
+            className="text-sm font-medium text-gray-600 mb-1"
+          >
             Email
           </label>
           <input
@@ -152,13 +165,18 @@ export default function SignupRight() {
             placeholder="Enter your email"
             className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
           />
-          {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+          {errors.email && (
+            <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+          )}
         </div>
 
         {/* Phone Field */}
         <div className="flex gap-4 items-start">
           <div className="flex-1 flex flex-col">
-            <label htmlFor="phone" className="text-sm font-medium text-gray-600 mb-1">
+            <label
+              htmlFor="phone"
+              className="text-sm font-medium text-gray-600 mb-1"
+            >
               Phone
             </label>
             <input
@@ -170,7 +188,9 @@ export default function SignupRight() {
               placeholder="Enter your phone number"
               className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
             />
-            {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+            {errors.phone && (
+              <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
+            )}
           </div>
           <div className="mt-6">
             {showCodeBox ? (
@@ -188,6 +208,8 @@ export default function SignupRight() {
                   type="button"
                   onClick={checkVerificationCode}
                   className="px-4 py-2 text-white bg-green-500 hover:bg-green-600 rounded-md"
+                  style={{ backgroundColor: "#c61d23" }}
+
                 >
                   Verify
                 </button>
@@ -197,6 +219,7 @@ export default function SignupRight() {
                 type="button"
                 onClick={verifyPhoneNo}
                 className="px-4 py-2 text-white bg-blue-500 hover:bg-blue-600 rounded-md"
+                style={{ backgroundColor: "#c61d23" }}
               >
                 Send Code
               </button>
@@ -206,7 +229,10 @@ export default function SignupRight() {
 
         {/* Password Field */}
         <div className="flex flex-col">
-          <label htmlFor="password" className="text-sm font-medium text-gray-600 mb-1">
+          <label
+            htmlFor="password"
+            className="text-sm font-medium text-gray-600 mb-1"
+          >
             Password
           </label>
           <input
@@ -218,14 +244,18 @@ export default function SignupRight() {
             placeholder="Enter your password"
             className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
           />
-          {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+          {errors.password && (
+            <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+          )}
         </div>
 
         {/* Submit Message */}
         {submitMessage && (
           <p
             className={`text-sm text-center mt-4 ${
-              submitMessage.includes("successfully") ? "text-green-500" : "text-red-500"
+              submitMessage.includes("successfully")
+                ? "text-green-500"
+                : "text-red-500"
             }`}
           >
             {submitMessage}
@@ -234,9 +264,9 @@ export default function SignupRight() {
 
         {/* Submit Button */}
         <button
-
           type="submit"
-          className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200"
+          className="w-full hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200"
+          style={{ backgroundColor: "#c61d23" }}
         >
           Sign Up
         </button>
@@ -244,7 +274,11 @@ export default function SignupRight() {
         {/* Login Link */}
         <p className="text-sm text-gray-600 text-center mt-4">
           Already have an account?{" "}
-          <Link to="/" className="text-indigo-500 hover:underline">
+          <Link
+            to="/"
+            className=" hover:underline"
+            style={{ color: "#c61d23" }}
+          >
             Log in
           </Link>
         </p>

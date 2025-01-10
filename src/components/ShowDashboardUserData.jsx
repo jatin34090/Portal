@@ -112,7 +112,8 @@ const ShowDashboardUserData = () => {
             </div>
           )}
           <button
-            className="bg-indigo-500 hover:bg-indigo-600 text-white py-3 px-6 rounded-lg mt-4"
+            className=" hover:bg-indigo-600 text-white py-3 px-6 rounded-lg mt-4"
+            style={{ backgroundColor: "#c61d23" }}
             onClick={handleUpdateDetails}
           >
             Update Details
@@ -136,8 +137,10 @@ const ShowDashboardUserData = () => {
               )
           )}
           <button
-            className="bg-indigo-500 hover:bg-indigo-600 text-white py-3 px-6 rounded-lg mt-4"
+            className=" hover:bg-indigo-600 text-white py-3 px-6 rounded-lg mt-4"
             onClick={toggleEditing}
+            style={{ backgroundColor: "#c61d23" }}
+
           >
             Edit Details
           </button>
