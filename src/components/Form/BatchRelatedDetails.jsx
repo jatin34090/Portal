@@ -98,8 +98,8 @@ const BatchRelatedDetailsForm = () => {
   // Options for select dropdowns
   const batchOptions =
     formData.classForAdmission <= 10
-      ? ["12-12-2024", "13-01-2025", "24-01-2025", "25-01-2025"]
-      : ["16-12-2024", "17-01-2025", "28-01-2025", "29-01-2025"];
+      ? [ "13/01/2025", "24/01/2025", "25/01/2025"]
+      : [ "17/01/2025", "28/01/2025", "29/01/2025"];
 
   let subjectOptions =
     convertToNumber(formData.classForAdmission) >= 6 &&

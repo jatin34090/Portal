@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 
 const DashboardHeader = () => {
   const { userData } = useSelector((state) => state.userDetails);
+  console.log("userData in DashboardHeader", userData);
 
   return (
     <div className="grid grid-cols-2 gap-8 mb-6">

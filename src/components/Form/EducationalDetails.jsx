@@ -8,6 +8,7 @@ import {
   updateEducationalDetails,
 } from "../../redux/slices/educationalDetailsSlice";
 import checkoutHandler from "../../utils/Razorpay";
+import { fetchUserDetails } from "../../redux/slices/userDeailsSlice";
 
 const EducationalDetailsForm = () => {
   const dispatch = useDispatch();
@@ -19,6 +20,9 @@ const EducationalDetailsForm = () => {
   const { formData, boards, loading, error, dataExist } = useSelector(
     (state) => state.educationalDetails
   );
+
+  const { userData } = useSelector((state) => state.userDetails);
+  console.log("userData in DashboardHeader", userData);
   const [submitMessage, setSubmitMessage] = useState("");
   const [checkUrl, setCheckUrl] = useState(false);
   const [paymentStatus, setPayementStatus] = useState("Pending");
@@ -31,9 +35,16 @@ const EducationalDetailsForm = () => {
     // Fetch boards and educational details when the component mounts
     dispatch(fetchBoards());
     dispatch(fetchEducationalDetails());
+    dispatch(fetchUserDetails());
+
     setCheckUrl(pathLocation === "/educationalDetailsForm");
+    console.log("userData", userData);
+    setPayementStatus(userData.paymentId ? "Paid" : "Pending");
   }, [dispatch, pathLocation]);
 
+  useEffect(() => {
+    console.log("userData", userData);
+  }, []);
   // Handler for form field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -87,6 +98,10 @@ const EducationalDetailsForm = () => {
     // If payment is pending, trigger the Razorpay checkout handler
     if (checkUrl && paymentStatus === "Pending") {
       await checkoutHandler();
+    } else {
+      if (checkUrl) {
+        navigate("/dashboard");
+      }
     }
   };
 
@@ -122,7 +137,10 @@ const EducationalDetailsForm = () => {
           className="w-full max-w-lg bg-white shadow-lg rounded-lg p-6 space-y-6"
           onSubmit={onSubmit}
         >
-          <h1 className="text-2xl font-bold text-center " style={{color: "#c61d23"}}>
+          <h1
+            className="text-2xl font-bold text-center "
+            style={{ color: "#c61d23" }}
+          >
             Educational Details Form
           </h1>
 
@@ -219,8 +237,7 @@ const EducationalDetailsForm = () => {
               className={`${
                 pathLocation === "/educationalDetailsForm" ? "w-2/3" : "w-full"
               } bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200 ml-2`}
-
-              style={{backgroundColor: "#c61d23"}}
+              style={{ backgroundColor: "#c61d23" }}
             >
               {checkUrl && paymentStatus === "Pending" ? "Payment" : "Update"}
             </button>

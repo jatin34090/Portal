@@ -27,7 +27,7 @@ const BasicDetailsForm = () => {
   // Dropdown options
   const genderOptions = ["Male", "Female", "Other"];
   const examNameOptions = ["S.Dat", "Rise"];
-  const examDateOptions = ["15-02-2025", "02-20-2025", "10-03-2025"];
+  const examDateOptions = ["15/02/2025", "02/20/2025", "10/03/2025"];
 
   useEffect(() => {
     setCheckUrl(location.pathname === "/basicDetailsForm");
