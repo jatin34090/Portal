@@ -46,6 +46,7 @@ const PaymentSuccessMessage = () => {
         <div className="text-2xl p-10">
           {` Your Payment is Successfull. Order ID : ${payment_id}`}
         </div>
+        <span>Wait for a minute. Admit Card will be generated soon</span>
         <span>Thank you for your payment.</span>
       </div>
     </div>

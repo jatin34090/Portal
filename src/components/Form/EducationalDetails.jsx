@@ -39,8 +39,13 @@ const EducationalDetailsForm = () => {
 
     setCheckUrl(pathLocation === "/educationalDetailsForm");
     console.log("userData", userData);
-    setPayementStatus(userData.paymentId ? "Paid" : "Pending");
+    console.log("userData?.paymentId?.length", userData?.paymentId?.length);
   }, [dispatch, pathLocation]);
+  useEffect(() => {
+    console.log("userData?.paymentId?.length", userData?.paymentId?.length);
+    setPayementStatus(userData?.paymentId?.length > 0 ? "Paid" : "Pending");
+
+  }, [userData]);
 
   useEffect(() => {
     console.log("userData", userData);
@@ -96,8 +101,10 @@ const EducationalDetailsForm = () => {
       }
     }
     // If payment is pending, trigger the Razorpay checkout handler
-    if (checkUrl && paymentStatus === "Pending") {
+    if (checkUrl && paymentStatus === "Pending" && validateForm()) {
       await checkoutHandler();
+    } else if (!validateForm()) {
+      setSubmitMessage("Please fill all the fields");
     } else {
       if (checkUrl) {
         navigate("/dashboard");
@@ -246,7 +253,8 @@ const EducationalDetailsForm = () => {
           {submitMessage && (
             <p
               className={`text-sm text-center mt-4 ${
-                submitMessage === "Educational details updated successfully!"
+                submitMessage === "Educational details updated successfully!" ||
+                submitMessage === "Educational details submitted successfully!"
                   ? "text-green-500"
                   : "text-red-500"
               }`}
