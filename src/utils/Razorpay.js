@@ -20,7 +20,7 @@ const checkoutHandler = async () => {
       name: "Acme Corp",
       description: "Test Payment",
       order_id: response.data.order.id,
-      callback_url: `${import.meta.env.VITE_APP_API_URL}/api/payment/paymentverification`,
+      callback_url: `${process.env.VITE_APP_API_URL}/api/payment/paymentverification`,
       prefill: {
         name: "jatin gupta",
         email: "5Yt0d@example.com",
@@ -35,7 +35,7 @@ const checkoutHandler = async () => {
         // Optionally, verify the payment on your backend
         
           // Redirect to the success page
-          window.location.href = `${import.meta.env.VITE_APP_API_URL}/payment/success/${response.razorpay_order_id}`;
+          window.location.href = `https://jatportal.netlify.app/payment/success/${response.razorpay_order_id}`;
        
       },
     };
