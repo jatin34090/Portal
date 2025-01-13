@@ -20,7 +20,7 @@ const checkoutHandler = async () => {
       name: "Acme Corp",
       description: "Test Payment",
       order_id: response.data.order.id,
-      callback_url: "http://localhost:5000/api/payment/paymentverification",
+      callback_url: `${VITE_APP_API_URL}/api/payment/paymentverification`,
       prefill: {
         name: "jatin gupta",
         email: "5Yt0d@example.com",
