@@ -35,7 +35,7 @@ const checkoutHandler = async () => {
         // Optionally, verify the payment on your backend
         
           // Redirect to the success page
-          window.location.href = `http://localhost:5173/payment/success/${response.razorpay_order_id}`;
+          window.location.href = `${process.env.VITE_APP_API_URL}/payment/success/${response.razorpay_order_id}`;
        
       },
     };
