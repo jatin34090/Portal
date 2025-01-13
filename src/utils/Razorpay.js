@@ -1,9 +1,7 @@
-import { useNavigate } from "react-router-dom";
 import axios from "../api/axios";
 
 
 const checkoutHandler = async () => {
-  const navigate = useNavigate();
     const {
       data: { key },
     } = await axios.get("/payment/getKey");
@@ -37,7 +35,7 @@ const checkoutHandler = async () => {
         // Optionally, verify the payment on your backend
         
           // Redirect to the success page
-          navigate(`/payment/success/${response.razorpay_order_id}`);
+          window.location.href = `https://jatportal.netlify.app/payment/success/${response.razorpay_order_id}`;
        
       },
     };
