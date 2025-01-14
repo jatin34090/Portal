@@ -8,9 +8,9 @@ export default function SignupRight() {
 
   // Regex pattern for phone number validation (+91 followed by 10 digits)
   const phoneRegex = /^\+91[0-9]{10}$/;
-  // const [codeVerified, setCodeVerified] = useState(true);
+  const [codeVerified, setCodeVerified] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [codeVerified, setCodeVerified] = useState(false);
+  // const [codeVerified, setCodeVerified] = useState(false);
 
   // State hooks
   const [formData, setFormData] = useState({
