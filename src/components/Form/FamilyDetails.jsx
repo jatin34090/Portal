@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchFamilyDetails,
+  setLoading,
   submitFamilyDetails,
 } from "../../redux/slices/familyDetailsSlice";
 import Spinner from "../../api/Spinner";
@@ -92,13 +93,16 @@ const FamilyDetails = () => {
   };
 
   const onSubmit = async (e) => {
+    setLoading(true);
     e.preventDefault();
     if (validateForm()) {
       dispatch(submitFamilyDetails(formData, dataExist));
       if (checkUrl) {
         navigate("/educationalDetailsForm");
+        
       }
     }
+    setLoading(false);
   };
 
   useEffect(() => {

@@ -7,6 +7,7 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Spinner from "../../api/Spinner";
+import { setLoading } from "../../redux/slices/familyDetailsSlice";
 
 const BasicDetailsForm = () => {
   const navigate = useNavigate();
@@ -62,6 +63,7 @@ const BasicDetailsForm = () => {
   };
 
   const onSubmit = async (e) => {
+    setLoading(true);
     e.preventDefault();
 
     if (validateForm()) {
@@ -84,6 +86,8 @@ const BasicDetailsForm = () => {
       } catch (error) {
         console.error("Error submitting form:", error);
         setSubmitMessage("Error submitting form. Please try again.");
+      }finally{
+        setLoading(false);
       }
     }
   };
