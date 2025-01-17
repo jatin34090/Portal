@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
+import NotificationWithoutIndicator from "../../assets/NotificationWithoutIndicator.png";
 import axios from "../../api/axios";
 import {
   fetchEducationalDetails,
@@ -9,6 +10,8 @@ import {
 } from "../../redux/slices/educationalDetailsSlice";
 import checkoutHandler from "../../utils/Razorpay";
 import { fetchUserDetails } from "../../redux/slices/userDeailsSlice";
+import Sidebar from "../Sidebar";
+import Navbar from "./Navbar";
 
 const EducationalDetailsForm = () => {
   const dispatch = useDispatch();
@@ -17,8 +20,15 @@ const EducationalDetailsForm = () => {
   const pathLocation = location.pathname;
 
   // Fetching required state from Redux
-  const { formData, boards, loading, error, dataExist } = useSelector(
-    (state) => state.educationalDetails
+  const {
+    formData: educationalFormData,
+    boards,
+    loading,
+    error,
+    dataExist: educationalDataExist,
+  } = useSelector((state) => state.educationalDetails);
+  const { formData: familyFormData, dataExist: familyDataExist } = useSelector(
+    (state) => state.familyDetails
   );
 
   const { userData } = useSelector((state) => state.userDetails);
@@ -28,6 +38,8 @@ const EducationalDetailsForm = () => {
   const [paymentStatus, setPayementStatus] = useState("Pending");
 
   const [errors, setErrors] = useState("");
+
+  const { userData: userDetails } = useSelector((state) => state.userDetails);
 
   // Checking if the current path is for the educational details form
 
@@ -44,26 +56,54 @@ const EducationalDetailsForm = () => {
   useEffect(() => {
     console.log("userData?.paymentId?.length", userData?.paymentId?.length);
     setPayementStatus(userData?.paymentId?.length > 0 ? "Paid" : "Pending");
-
   }, [userData]);
 
   useEffect(() => {
     console.log("userData", userData);
   }, []);
+
+  const { fromData } = useSelector((state) => state.userDetails);
   // Handler for form field changes
-  const handleChange = (e) => {
+  const educationalHandleChange = (e) => {
     const { name, value } = e.target;
     dispatch(updateEducationalDetails({ [name]: value }));
     if (value.trim()) {
       setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
     }
   };
-  const validateForm = () => {
+
+  const familyHandleChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === "MotherContactNumber" || name === "FatherContactNumber") {
+      if (value.length > 10) {
+        return;
+      }
+    }
+
+    dispatch({
+      type: "familyDetails/setFormData",
+      payload: { ...familyFormData, [name]: value },
+    });
+  };
+
+
+    // Income options
+  const incomeRanges = [
+    "Less than 1 Lakh",
+    "1 Lakh - 5 Lakhs",
+    "5 Lakhs - 10 Lakhs",
+    "10 Lakhs - 20 Lakhs",
+    "More than 20 Lakhs",
+  ];
+
+
+  const educationalValidateForm = () => {
     let formErrors = {};
     let isValid = true;
 
-    Object.keys(formData).forEach((key) => {
-      if (!formData[key]?.toString().trim()) {
+    Object.keys(educationalFormData).forEach((key) => {
+      if (!educationalFormData[key]?.toString().trim()) {
         formErrors[key] = `${key.replace(/([A-Z])/g, " $1")} is required`;
         isValid = false;
       }
@@ -76,7 +116,7 @@ const EducationalDetailsForm = () => {
   const onSubmit = async (e) => {
     e.preventDefault();
     // Dispatch the submit action and pass the navigate and checkUrl params
-    if (validateForm()) {
+    if (educationalValidateForm()) {
       try {
         console.log("dataExist", dataExist);
         const url = dataExist
@@ -84,7 +124,7 @@ const EducationalDetailsForm = () => {
           : "/form/educationalDetails/addForm";
         const method = dataExist ? axios.patch : axios.post;
 
-        await method(url, formData);
+        await method(url, educationalFormData);
 
         setSubmitMessage(
           dataExist
@@ -101,14 +141,14 @@ const EducationalDetailsForm = () => {
       }
     }
     // If payment is pending, trigger the Razorpay checkout handler
-    if (checkUrl && paymentStatus === "Pending" && validateForm()) {
+    if (checkUrl && paymentStatus === "Pending" && educationalValidateForm()) {
       await checkoutHandler();
-    } else if (!validateForm()) {
+    } else if (!educationalValidateForm()) {
       setSubmitMessage("Please fill all the fields");
     } else {
-      if (checkUrl) {
-        navigate("/dashboard");
-      }
+      // if (checkUrl) {
+      //   navigate("/dashboard");
+      // }
     }
   };
 
@@ -127,143 +167,287 @@ const EducationalDetailsForm = () => {
   };
 
   // Display loading state while data is being fetched
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  // if (loading) {
+  //   return <div>Loading...</div>;
+  // }
 
   return (
     <div
-      className={`${
-        pathLocation === "/educationalDetailsForm" && "min-h-screen"
-      } flex items-center justify-center bg-gradient-to-r from-blue-50 to-indigo-50`}
+      className="w-full h-screen overflow-auto "
+      style={{ backgroundColor: "#c61d23" }}
     >
-      {loading ? (
-        <Spinner />
-      ) : (
-        <form
-          className="w-full max-w-lg bg-white shadow-lg rounded-lg p-6 space-y-6"
-          onSubmit={onSubmit}
-        >
-          <h1
-            className="text-2xl font-bold text-center "
-            style={{ color: "#c61d23" }}
+      <div className="grid grid-cols-7 ">
+        <div className="col-span-1">
+          <Sidebar />
+        </div>
+
+        <div className="flex flex-col col-span-6 ">
+            <Navbar />
+         
+
+          <div
+            className={`col-span-6 px-9 py-4  mb-3 mr-5 bg-gray-200 rounded-3xl flex flex-col items-end gap-4  overflow-auto`}
           >
-            Educational Details Form
-          </h1>
+            {/* {loading ? (
+              <Spinner />
+            ) : ( */}
+            <div className=" w-full flex flex-col gap-4 h-full  bg-gray-200">
+              <h3 className="text-2xl font-extrabold">User Details</h3>
 
-          {Object.keys(formData).map((key) => (
-            <div className="flex flex-col" key={key}>
-              <label
-                htmlFor={key}
-                className="text-sm font-medium text-gray-600 mb-1"
+              <div
+                className="rounded-2xl "
+                style={{ backgroundColor: "#c61d23" }}
               >
-                {` ${
-                  key === "Class"
-                    ? "Current Class"
-                    : key.replace(/([A-Z])/g, " $1")
-                }`}
-              </label>
+                <h1 className="text-xl font-bold px-4 py-2 text-white ">
+                  Educational Details
+                </h1>
 
-              {key === "Class" || key === "YearOfPassing" ? (
-                <select
-                  id={key}
-                  name={key}
-                  value={formData[key]}
-                  onChange={handleChange}
-                  className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                <form
+                  className="flex flex-wrap gap-4  w-full bg-white shadow-lg p-2 rounded-b-2xl"
+                  onSubmit={onSubmit}
                 >
-                  <option value="">{`Select ${key.replace(
-                    /([A-Z])/g,
-                    " $1"
-                  )}`}</option>
-                  {key === "YearOfPassing" ? (
-                    <option value="2024">2024</option>
-                  ) : (
-                    Array.from({ length: 7 }, (_, i) => i + 6).map(
-                      (classNum) => (
-                        <option key={classNum} value={classNum}>
-                          {convertToRoman(classNum)}
-                        </option>
-                      )
-                    )
-                  )}
-                </select>
-              ) : key === "Board" ? (
-                <select
-                  id={key}
-                  name={key}
-                  value={formData[key]}
-                  onChange={handleChange}
-                  className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
-                >
-                  <option disabled value="">
-                    Select Board
-                  </option>
-                  {boards.map((board, index) => (
-                    <option key={index} value={board.name}>
-                      {board.name}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <div className="flex items-center">
-                  <input
-                    type={key === "Percentage" ? "number" : "text"}
-                    id={key}
-                    name={key}
-                    value={formData[key]}
-                    onChange={handleChange}
-                    placeholder={`Enter ${key.replace(/([A-Z])/g, " $1")}`}
-                    className={`border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none 
+                  {/* <div
+                      className="rounded-2xl "
+                      style={{ backgroundColor: "#c61d23" }}
+                    > */}
+                  {Object.keys(educationalFormData).map((key) => (
+                    <div className="flex flex-col w-2/5" key={key}>
+                      <label
+                        htmlFor={key}
+                        className="text-sm font-medium text-gray-600 mb-1"
+                      >
+                        {` ${
+                          key === "Class"
+                            ? "Current Class"
+                            : key.replace(/([A-Z])/g, " $1")
+                        }`}
+                      </label>
+
+                      {key === "Class" || key === "YearOfPassing" ? (
+                        <select
+                          id={key}
+                          name={key}
+                          value={educationalFormData[key]}
+                          onChange={educationalHandleChange}
+                          className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                        >
+                          <option value="">{`Select ${key.replace(
+                            /([A-Z])/g,
+                            " $1"
+                          )}`}</option>
+                          {key === "YearOfPassing" ? (
+                            <option value="2024">2024</option>
+                          ) : (
+                            Array.from({ length: 7 }, (_, i) => i + 6).map(
+                              (classNum) => (
+                                <option key={classNum} value={classNum}>
+                                  {convertToRoman(classNum)}
+                                </option>
+                              )
+                            )
+                          )}
+                        </select>
+                      ) : key === "Board" ? (
+                        <select
+                          id={key}
+                          name={key}
+                          value={educationalFormData[key]}
+                          onChange={educationalHandleChange}
+                          className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                        >
+                          <option disabled value="">
+                            Select Board
+                          </option>
+                          {boards.map((board, index) => (
+                            <option key={index} value={board.name}>
+                              {board.name}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <div className="flex items-center">
+                          <input
+                            type={key === "Percentage" ? "number" : "text"}
+                            id={key}
+                            name={key}
+                            value={educationalFormData[key]}
+                            onChange={educationalHandleChange}
+                            placeholder={`Enter ${key.replace(
+                              /([A-Z])/g,
+                              " $1"
+                            )}`}
+                            className={`border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none 
                     ${key === "Percentage" ? "w-1/3" : "w-full"}`}
-                  />
-                  {key === "Percentage" && (
-                    <span className="ml-2 text-gray-600 text-sm">%</span>
+                          />
+                          {key === "Percentage" && (
+                            <span className="ml-2 text-gray-600 text-sm">
+                              %
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      {errors.key && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.key}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                  {/* </div> */}
+
+                </form>
+              </div>
+              <div
+                className="rounded-2xl "
+                style={{ backgroundColor: "#c61d23" }}
+              >
+                <h1 className="text-xl font-bold px-4 py-2 text-white ">
+                  Family Details
+                </h1>
+
+                <form
+                  className="flex flex-wrap gap-4  w-full bg-white shadow-lg p-2 rounded-b-2xl"
+                  onSubmit={onSubmit}
+                >
+                  {/* <div
+                      className="rounded-2xl "
+                      style={{ backgroundColor: "#c61d23" }}
+                    > */}
+                  {Object.keys(familyFormData).map((key) => (
+                    <div className="flex flex-col w-2/5" key={key}>
+                      <label
+                        htmlFor={key}
+                        className="text-sm font-medium text-gray-600 mb-1"
+                      >
+                        {` ${
+                          key === "Class"
+                            ? "Current Class"
+                            : key.replace(/([A-Z])/g, " $1")
+                        }`}
+                      </label>
+
+                      {key === "Class" || key === "YearOfPassing" ? (
+                        <select
+                          id={key}
+                          name={key}
+                          value={familyFormData[key]}
+                          onChange={familyHandleChange}
+                          className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                        >
+                          <option value="">{`Select ${key.replace(
+                            /([A-Z])/g,
+                            " $1"
+                          )}`}</option>
+                          {key === "YearOfPassing" ? (
+                            <option value="2024">2024</option>
+                          ) : (
+                            Array.from({ length: 7 }, (_, i) => i + 6).map(
+                              (classNum) => (
+                                <option key={classNum} value={classNum}>
+                                  {convertToRoman(classNum)}
+                                </option>
+                              )
+                            )
+                          )}
+                        </select>
+                      ) : key === "Board" ? (
+                        <select
+                          id={key}
+                          name={key}
+                          value={familyFormData[key]}
+                          onChange={familyHandleChange}
+                          className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                        >
+                          <option disabled value="">
+                            Select Board
+                          </option>
+                          {boards.map((board, index) => (
+                            <option key={index} value={board.name}>
+                              {board.name}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <div className="flex items-center">
+                          <input
+                            type={key === "Percentage" ? "number" : "text"}
+                            id={key}
+                            name={key}
+                            value={familyFormData[key]}
+                            onChange={familyHandleChange}
+                            placeholder={`Enter ${key.replace(
+                              /([A-Z])/g,
+                              " $1"
+                            )}`}
+                            className={`border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none 
+                    ${key === "Percentage" ? "w-1/3" : "w-full"}`}
+                          />
+                          {key === "Percentage" && (
+                            <span className="ml-2 text-gray-600 text-sm">
+                              %
+                            </span>
+                          )}
+                        </div>
+                      )}
+                      {console.log("familyFormData", errors)}
+
+                      {errors.key && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.key}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                  {/* </div> */}
+
+                 
+                </form>
+              </div>
+              
+              {submitMessage && (
+                    <p
+                      className={`text-sm text-center mt-4 ${
+                        submitMessage ===
+                          "Educational details updated successfully!" ||
+                        submitMessage ===
+                          "Educational details submitted successfully!"
+                          ? "text-green-500"
+                          : "text-red-500"
+                      }`}
+                    >
+                      {submitMessage}
+                    </p>
                   )}
-                </div>
-              )}
-
-              {errors[key] && (
-                <p className="text-red-500 text-xs mt-1">{errors[key]}</p>
-              )}
             </div>
-          ))}
+            {/* )} */}
+              {/* Submit and Previous Buttons */}
+              <div className="flex justify-between items-center">
+              {pathLocation === "/batchDetailsForm" && (
+                <button
+                  type="button"
+                  onClick={() => navigate(-1)}
+                  className="w-1/3 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 rounded-lg transition duration-200"
+                >
+                  Previous
+                </button>
+              )}
 
-          <div className="flex justify-between items-center">
-            {pathLocation === "/educationalDetailsForm" && (
               <button
                 type="button"
-                onClick={() => navigate(-1)}
-                className="w-1/3 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 rounded-lg transition duration-200"
+                onClick={onSubmit}
+                className={` ${
+                  pathLocation === "/batchDetailsForm" ? "w-2/3" : "w-full"
+                }  hover:bg-indigo-600 text-white font-semibold py-2 px-9 rounded-full transition duration-200 ml-2`}
+                style={{ backgroundColor: "#c61d23" }}
               >
-                Previous
+                {checkUrl ? "Next" : "Update"}
               </button>
-            )}
-            <button
-              type="submit"
-              className={`${
-                pathLocation === "/educationalDetailsForm" ? "w-2/3" : "w-full"
-              } bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200 ml-2`}
-              style={{ backgroundColor: "#c61d23" }}
-            >
-              {checkUrl && paymentStatus === "Pending" ? "Payment" : "Update"}
-            </button>
+            </div>
           </div>
-
-          {submitMessage && (
-            <p
-              className={`text-sm text-center mt-4 ${
-                submitMessage === "Educational details updated successfully!" ||
-                submitMessage === "Educational details submitted successfully!"
-                  ? "text-green-500"
-                  : "text-red-500"
-              }`}
-            >
-              {submitMessage}
-            </p>
-          )}
-        </form>
-      )}
+         
+        </div>
+      </div>
     </div>
   );
 };

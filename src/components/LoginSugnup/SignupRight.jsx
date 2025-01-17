@@ -92,14 +92,14 @@ export default function SignupRight() {
     setLoading(true);
 
     try {
-      // setShowCodeBox(true);
+      setShowCodeBox(true);
 
-      const response = await axios.post("/students/sendVerification", {
-        mobileNumber: `${formData.phone}`,
-      });
-      if (response.status === 200) {
-        setShowCodeBox(true);
-      }
+      // const response = await axios.post("/students/sendVerification", {
+      //   mobileNumber: `${formData.phone}`,
+      // });
+      // if (response.status === 200) {
+      //   setShowCodeBox(true);
+      // }
     } catch (error) {
       setSubmitMessage("Error verifying phone number");
     } finally {
@@ -109,15 +109,17 @@ export default function SignupRight() {
 
   const checkVerificationCode = async () => {
     try {
-      const response = await axios.post("/students/verifyNumber", {
-        mobileNumber: `${formData.phone}`,
-        otp: code,
-      });
-      if (response.status === 200) {
-        setSubmitMessage("Phone number verified successfully!");
-        setCodeVerified(true);
+      // const response = await axios.post("/students/verifyNumber", {
+      //   mobileNumber: `${formData.phone}`,
+      //   otp: code,
+      // });
+      // if (response.status === 200) {
+      //   setSubmitMessage("Phone number verified successfully!");
+      //   setCodeVerified(true);
+      //   setShowCodeBox(false);
+      // }
+      setCodeVerified(true);
         setShowCodeBox(false);
-      }
     } catch (error) {
       setSubmitMessage("Error verifying phone number");
     }

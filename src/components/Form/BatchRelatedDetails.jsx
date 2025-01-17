@@ -142,7 +142,7 @@ const BatchRelatedDetailsForm = () => {
         <Spinner />
       ) : (
         <form
-          className="w-full max-w-lg bg-white shadow-lg rounded-lg p-6 space-y-6"
+          className="w-full max-w-lg bg-white shadow-lg rounded-lg p-4 space-y-6"
           onSubmit={onSubmit}
         >
           <h1 className="text-2xl font-bold text-center " style={{ color: "#c61d23" }} >

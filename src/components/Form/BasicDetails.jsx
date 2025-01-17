@@ -4,11 +4,18 @@ import {
   fetchBasicDetails,
   updateBasicDetails,
 } from "../../redux/slices/basicDetailsSlice";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Spinner from "../../api/Spinner";
 import { setLoading } from "../../redux/slices/loadingSlice";
 import Sidebar from "../Sidebar";
+import {
+  fetchBatchDetails,
+  updateBatchDetails,
+} from "../../redux/slices/batchDetailsSlice"; // Adjust the path as necessary
+import { use } from "react";
+import { fetchUserDetails } from "../../redux/slices/userDeailsSlice";
+import Navbar from "./Navbar";
 
 const BasicDetailsForm = () => {
   const navigate = useNavigate();
@@ -16,11 +23,15 @@ const BasicDetailsForm = () => {
   const location = useLocation();
 
   const {
-    data: formData,
+    data: basicFormData,
     loading,
     error,
-    dataExist,
+    dataExist: basicFormDataExist,
   } = useSelector((state) => state.basicDetails);
+
+  const { formData: batchFormData, dataExist: batchFormDataExist } =
+    useSelector((state) => state.batchDetails);
+
 
   const [checkUrl, setCheckUrl] = useState(false);
   const [errors, setErrors] = useState({});
@@ -34,19 +45,20 @@ const BasicDetailsForm = () => {
   useEffect(() => {
     setCheckUrl(location.pathname === "/basicDetailsForm");
     dispatch(fetchBasicDetails());
+    dispatch(fetchBatchDetails());
+    dispatch(fetchUserDetails());
   }, [dispatch, location.pathname]);
 
-  useEffect(()=>{
+  useEffect(() => {
     dispatch(setLoading(false));
-
   }, []);
 
-  const validateForm = () => {
+  const validateBasicForm = () => {
     const formErrors = {};
     let isValid = true;
 
     ["dob", "gender", "examName", "examDate"].forEach((field) => {
-      if (!formData?.[field]?.trim()) {
+      if (!basicFormData?.[field]?.trim()) {
         formErrors[field] = `${field
           .replace(/([A-Z])/g, " $1")
           .toUpperCase()} is required.`;
@@ -58,7 +70,7 @@ const BasicDetailsForm = () => {
     return isValid;
   };
 
-  const handleChange = (e) => {
+  const basicFormHandleChange = (e) => {
     const { name, value } = e.target;
     console.log("name", name, "value", value);
     dispatch(updateBasicDetails({ [name]: value }));
@@ -68,27 +80,51 @@ const BasicDetailsForm = () => {
     }
   };
 
+  const batchDetailsHandleChange = (e) => {
+    const { name, value } = e.target;
+    dispatch(updateBatchDetails({ [name]: value }));
+
+    if (value.trim()) {
+      setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
+    }
+  };
+
+  const validateBatchForm = () => {
+    let formErrors = {};
+    let isValid = true;
+
+    Object.keys(batchFormData).forEach((key) => {
+      // if (
+      //   !(key === "subjectCombination" && batchFormData.classForAdmission <= 10)
+      // ) {
+      if (!batchFormData[key]?.toString().trim()) {
+        formErrors[key] = `${key.replace(/([A-Z])/g, " $1")} is required`;
+        isValid = false;
+      }
+      // }
+    });
+
+    setErrors(formErrors);
+    return isValid;
+  };
+
   const onSubmit = async (e) => {
     setLoading(true);
     e.preventDefault();
 
-    if (validateForm()) {
+    if (validateBasicForm()) {
       try {
-        const url = dataExist
+        const url = basicFormDataExist
           ? "/form/basicDetails/updateForm"
           : "/form/basicDetails/addForm";
-        const method = dataExist ? axios.patch : axios.post;
+        const method = basicFormDataExist ? axios.patch : axios.post;
 
-        await method(url, formData);
+        await method(url, basicFormData);
         setSubmitMessage(
-          dataExist
+          basicFormDataExist
             ? "Basic details updated successfully!"
             : "Basic details submitted successfully!"
         );
-
-        if (checkUrl) {
-          navigate("/batchDetailsForm");
-        }
       } catch (error) {
         console.error("Error submitting form:", error);
         setSubmitMessage("Error submitting form. Please try again.");
@@ -96,38 +132,117 @@ const BasicDetailsForm = () => {
         setLoading(false);
       }
     }
+    if (validateBatchForm()) {
+      try {
+        const url = batchFormDataExist
+          ? "/form/batchRelatedDetails/updateForm"
+          : "/form/batchRelatedDetails/addForm";
+        const method = batchFormDataExist ? axios.patch : axios.post;
+
+        await method(url, batchFormData);
+
+        setSubmitMessage(
+          batchFormDataExist
+            ? "Batch related details updated successfully!"
+            : "Batch related details submitted successfully!"
+        );
+
+        if (checkUrl) {
+          navigate("/familyDetailsForm");
+        }
+      } catch (error) {
+        console.error("Error submitting form:", error);
+        setSubmitMessage("Error submitting form. Please try again.");
+      }
+    }
   };
 
-  return (
-    <div className="w-full h-screen " style={{ backgroundColor: "#c61d23" }}>
-      <div className=""></div>
+  const pathLocation = location.pathname;
 
-      <div className="grid grid-cols-7">
+  const convertToNumber = (romanNumeral) => {
+    const romanToNumber = {
+      VI: 6,
+      VII: 7,
+      VIII: 8,
+      IX: 9,
+      X: 10,
+      XI: 11,
+      XII: 12,
+    };
+
+    return romanToNumber[romanNumeral];
+  };
+
+  // Options for select dropdowns
+  const batchOptions =
+    batchFormData.classForAdmission <= 10
+      ? ["13/01/2025", "24/01/2025", "25/01/2025"]
+      : ["17/01/2025", "28/01/2025", "29/01/2025"];
+
+  let subjectOptions =
+    convertToNumber(batchFormData.classForAdmission) >= 6 &&
+    convertToNumber(batchFormData.classForAdmission) <= 10
+      ? ["Foundation"]
+      : ["Engineering", "Medical"];
+  const convertToRoman = (num) => {
+    const romanNumerals = {
+      6: "VI",
+      7: "VII",
+      8: "VIII",
+      9: "IX",
+      10: "X",
+      11: "XI",
+      12: "XII",
+    };
+    return romanNumerals[num];
+  };
+
+  useEffect(() => {
+    console.log("batchFormData", batchFormData);
+    console.log("basicFormData", basicFormData);
+  }, [batchFormData, basicFormData]);
+
+  return (
+    <div
+      className="w-full h-screen overflow-auto "
+      style={{ backgroundColor: "#c61d23" }}
+    >
+      <div className="grid grid-cols-7 ">
         <div className="col-span-1">
           <Sidebar />
         </div>
 
-        <div
-          className={`col-span-6 p-5 mt-12 mb-5 mx-5 bg-white rounded-3xl flex justify-center `}
-        >
-          {
-          // loading ? (
-          //   // <Spinner />
-          // ) : 
-          
-          // (
-            <div className=" w-full flex flex-col gap-4">
-              <h3 className="text-2xl font-extrabold">User Details</h3>
+        <div className="flex flex-col col-span-6 ">
+          {/* <div className=" pr-8 flex gap-12 justify-between items-center"> */}
+            <Navbar />
+           
+          {/* </div> */}
 
-              <div className="rounded-xl " style={{ backgroundColor: "#c61d23" }}>
-                <h1 className="text-xl font-bold px-4 py-2 text-white rounded-t-xl">
-                  Basic Details
-                </h1>
-                <form
-                  className="flex flex-wrap gap-9  w-full bg-white shadow-lg p-6 "
-                  onSubmit={onSubmit}
+          <div
+            className={`col-span-6 px-9 py-4  mb-3 mr-5 bg-gray-200 rounded-3xl flex flex-col items-end gap-4  overflow-auto`}
+          >
+            {
+              // loading ? (
+              //   // <Spinner />
+              // ) :
+
+              // (
+
+              <div className=" w-full flex flex-col gap-4 bg-gray-200">
+                <h3 className="text-2xl font-extrabold">User Details</h3>
+
+                <div
+                  className="rounded-2xl "
+                  style={{ backgroundColor: "#c61d23" }}
                 >
-                  {/* <div className=" "> */}
+                  <h1 className="text-xl font-bold px-4 py-2 text-white ">
+                    Basic Details
+                  </h1>
+                  <form
+                    className="flex flex-wrap gap-4  w-full bg-white shadow-lg p-2 rounded-b-2xl"
+                    onSubmit={onSubmit}
+                  >
+                    {/* <div className=" "> */}
                     {/* Date of Birth */}
                     <div className="flex flex-col w-2/5">
                       <label
@@ -140,8 +255,8 @@ const BasicDetailsForm = () => {
                         type="date"
                         id="dob"
                         name="dob"
-                        value={formData?.dob || ""}
-                        onChange={handleChange}
+                        value={basicFormData?.dob || ""}
+                        onChange={basicFormHandleChange}
                         max={new Date().toISOString().split("T")[0]}
                         className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
                       />
@@ -163,8 +278,8 @@ const BasicDetailsForm = () => {
                       <select
                         id="gender"
                         name="gender"
-                        value={formData?.gender || ""}
-                        onChange={handleChange}
+                        value={basicFormData?.gender || ""}
+                        onChange={basicFormHandleChange}
                         className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
                       >
                         <option value="">Select Gender</option>
@@ -192,8 +307,8 @@ const BasicDetailsForm = () => {
                       <select
                         id="examName"
                         name="examName"
-                        value={formData?.examName || ""}
-                        onChange={handleChange}
+                        value={basicFormData?.examName || ""}
+                        onChange={basicFormHandleChange}
                         className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
                       >
                         <option value="">Select Exam Name</option>
@@ -221,8 +336,8 @@ const BasicDetailsForm = () => {
                       <select
                         id="examDate"
                         name="examDate"
-                        value={formData?.examDate || ""}
-                        onChange={handleChange}
+                        value={basicFormData?.examDate || ""}
+                        onChange={basicFormHandleChange}
                         className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
                       >
                         <option value="">Select Exam Date</option>
@@ -239,181 +354,168 @@ const BasicDetailsForm = () => {
                       )}
                     </div>
 
-                    {/* Submit Button */}
-                    {/* <div className="flex justify-between items-center">
-                      <button
-                        type="submit"
-                        className="w-full hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200"
-                        style={{ backgroundColor: "#c61d23" }}
-                      >
-                        {checkUrl ? "Next" : "Update"}
-                      </button>
-                    </div> */}
-
-                    {/* Submit Message */}
-                    {submitMessage && (
-                      <p
-                        className={`text-sm text-center mt-4 ${
-                          submitMessage.includes("successfully")
-                            ? "text-green-500"
-                            : "text-red-500"
-                        }`}
-                      >
-                        {submitMessage}
-                      </p>
-                    )}
-                  {/* </div> */}
-                </form>
-              </div>
-              <div className="rounded-xl " style={{ backgroundColor: "#c61d23" }}>
-                <h1 className="text-xl font-bold px-4 py-2 text-white rounded-t-xl">
-                  Basic Details
-                </h1>
-                <form
-                  className="flex flex-wrap gap-9  w-full bg-white shadow-lg p-6 "
-                  onSubmit={onSubmit}
+                    {/* </div> */}
+                  </form>
+                </div>
+                <div
+                  className="rounded-2xl "
+                  style={{ backgroundColor: "#c61d23" }}
                 >
-                  {/* <div className=" "> */}
-                    {/* Date of Birth */}
+                  <h1 className="text-xl font-bold px-4 py-2 text-white">
+                    Batch Details
+                  </h1>
+                  <form
+                    className="flex flex-wrap gap-4  w-full bg-white shadow-lg p-2 rounded-b-2xl "
+                    onSubmit={onSubmit}
+                  >
+                    {/* <div className=" "> */}
+                    {/* Class  for admission*/}
                     <div className="flex flex-col w-2/5">
                       <label
-                        htmlFor="dob"
+                        htmlFor="classForAdmission"
                         className="text-sm font-medium text-gray-600 mb-1"
                       >
-                        Date of Birth
+                        Class
                       </label>
-                      <input
-                        type="date"
-                        id="dob"
-                        name="dob"
-                        value={formData?.dob || ""}
-                        onChange={handleChange}
-                        max={new Date().toISOString().split("T")[0]}
+                      <select
+                        id="classForAdmission"
+                        name="classForAdmission"
+                        value={batchFormData?.classForAdmission || ""}
+                        onChange={batchDetailsHandleChange}
+                        placeholder="Select Class for adminssion"
                         className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
-                      />
-                      {errors.dob && (
+                      >
+                        <option className="text-gray-200" disabled value="">
+                          Select Class for admission
+                        </option>
+                        {Array.from({ length: 7 }, (_, i) => i + 6).map(
+                          (classNum) => (
+                            <option
+                              key={classNum}
+                              value={convertToRoman(classNum)}
+                            >
+                              {convertToRoman(classNum)}
+                            </option>
+                          )
+                        )}
+                      </select>
+                      {errors.classForAdmission && (
                         <p className="text-red-500 text-xs mt-1">
-                          {errors.dob}
+                          {errors.classForAdmission}
                         </p>
                       )}
                     </div>
 
-                    {/* Gender */}
+                    {/* Preferred Batch */}
                     <div className="flex flex-col  w-2/5">
                       <label
-                        htmlFor="gender"
+                        htmlFor="preferredBatch"
                         className="text-sm font-medium text-gray-600 mb-1"
                       >
-                        Gender
+                        Preferred Batch
                       </label>
                       <select
-                        id="gender"
-                        name="gender"
-                        value={formData?.gender || ""}
-                        onChange={handleChange}
+                        id="preferredBatch"
+                        name="preferredBatch"
+                        value={batchFormData.preferredBatch || ""}
+                        onChange={batchDetailsHandleChange}
                         className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
                       >
-                        <option value="">Select Gender</option>
-                        {genderOptions.map((option, index) => (
-                          <option key={index} value={option}>
-                            {option}
+                        <option disabled value="">
+                          Select Preferred Batch
+                        </option>
+                        {batchOptions.map((batch, index) => (
+                          <option key={index} value={batch}>
+                            {batch}
                           </option>
                         ))}
                       </select>
-                      {errors.gender && (
+                      {errors.preferredBatch && (
                         <p className="text-red-500 text-xs mt-1">
-                          {errors.gender}
+                          {errors.preferredBatch}
                         </p>
                       )}
                     </div>
 
-                    {/* Exam Name */}
+                    {/* Subject Combination */}
                     <div className="flex flex-col  w-2/5">
                       <label
-                        htmlFor="examName"
+                        htmlFor="subjectCombination"
                         className="text-sm font-medium text-gray-600 mb-1"
                       >
-                        Exam Name
+                        Subject Combination
                       </label>
                       <select
-                        id="examName"
-                        name="examName"
-                        value={formData?.examName || ""}
-                        onChange={handleChange}
+                        id="subjectCombination"
+                        name="subjectCombination"
+                        value={batchFormData.subjectCombination || ""}
+                        onChange={batchDetailsHandleChange}
                         className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
                       >
-                        <option value="">Select Exam Name</option>
-                        {examNameOptions.map((option, index) => (
-                          <option key={index} value={option}>
-                            {option}
-                          </option>
-                        ))}
+                        <option disabled value="">
+                          Select Subject Combination
+                        </option>
+                        {console.log("subjectOptions", subjectOptions)}
+
+                        {subjectOptions &&
+                          subjectOptions.map((subject, index) => (
+                            <option key={index} value={subject}>
+                              {subject}
+                            </option>
+                          ))}
                       </select>
-                      {errors.examName && (
+                      {errors.subjectCombination && (
                         <p className="text-red-500 text-xs mt-1">
-                          {errors.examName}
+                          {errors.subjectCombination}
                         </p>
                       )}
                     </div>
 
-                    {/* Exam Date */}
-                    <div className="flex flex-col  w-2/5">
-                      <label
-                        htmlFor="examDate"
-                        className="text-sm font-medium text-gray-600 mb-1"
-                      >
-                        Exam Date
-                      </label>
-                      <select
-                        id="examDate"
-                        name="examDate"
-                        value={formData?.examDate || ""}
-                        onChange={handleChange}
-                        className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
-                      >
-                        <option value="">Select Exam Date</option>
-                        {examDateOptions.map((option, index) => (
-                          <option key={index} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                      {errors.examDate && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {errors.examDate}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Submit Button */}
-                    {/* <div className="flex justify-between items-center">
-                      <button
-                        type="submit"
-                        className="w-full hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition duration-200"
-                        style={{ backgroundColor: "#c61d23" }}
-                      >
-                        {checkUrl ? "Next" : "Update"}
-                      </button>
-                    </div> */}
-
-                    {/* Submit Message */}
-                    {submitMessage && (
-                      <p
-                        className={`text-sm text-center mt-4 ${
-                          submitMessage.includes("successfully")
-                            ? "text-green-500"
-                            : "text-red-500"
-                        }`}
-                      >
-                        {submitMessage}
-                      </p>
-                    )}
-                  {/* </div> */}
-                </form>
+                    {/* </div> */}
+                  </form>
+                </div>
               </div>
+              // )
+            }
+            {/* Submit Message */}
+            <div className="w-full text-center">
+              {submitMessage && (
+                <p
+                  className={`text-sm text-center ${
+                    submitMessage.includes("successfully")
+                      ? "text-green-500"
+                      : "text-red-500"
+                  }`}
+                >
+                  {submitMessage}
+                </p>
+              )}
             </div>
-          // )
-          }
+
+            {/* Submit and Previous Buttons */}
+            <div className="flex justify-between items-center">
+              {pathLocation === "/batchDetailsForm" && (
+                <button
+                  type="button"
+                  onClick={() => navigate(-1)}
+                  className="w-1/3 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 rounded-lg transition duration-200"
+                >
+                  Previous
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={onSubmit}
+                className={` ${
+                  pathLocation === "/batchDetailsForm" ? "w-2/3" : "w-full"
+                }  hover:bg-indigo-600 text-white font-semibold py-2 px-9 rounded-full transition duration-200 ml-2`}
+                style={{ backgroundColor: "#c61d23" }}
+              >
+                {checkUrl ? "Next" : "Update"}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
