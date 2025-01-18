@@ -14,7 +14,7 @@ const Sidebar = () => {
 
   return (
     <div
-      className="flex flex-col justify-between h-full pt-9"
+      className="flex flex-col justify-between h-screen pt-9"
       style={{ backgroundColor: "#c61d23" }}
     >
       <div className=" flex flex-col gap-8">

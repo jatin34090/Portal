@@ -1,4 +1,5 @@
 import axios from "../api/axios";
+import Sidebar from "./Sidebar";
 
 const payment = () => {
   const checkoutHandler = async () => {
@@ -41,16 +42,24 @@ const payment = () => {
 
     console.log("options", options);
 
-
     const razorpay = new window.Razorpay(options);
 
     razorpay.open();
-
 
     console.log("razorpay object", razorpay);
     // await axios("/payment/paymentverification", {});
   };
 
-  return <div onClick={checkoutHandler}>payment</div>;
+  return (
+    <div className="grid grid-cols-7 h-screen">
+      <div className="col-span-1">
+        <Sidebar/>
+      </div>
+
+      <div className="col-span-6 flex items-center justify-center">
+        <div className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={checkoutHandler}>payment</div>
+      </div>
+    </div>
+  );
 };
 export default payment;

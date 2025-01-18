@@ -23,6 +23,10 @@ const familyDetailsSlice = createSlice({
   name: "familyDetails",
   initialState,
   reducers: {
+
+    updateFamilyDetails(state, action) {
+      state.formData = { ...state.formData, ...action.payload };
+    },
     setFormData: (state, action) => {
       state.formData = action.payload;
     },
@@ -45,6 +49,7 @@ const familyDetailsSlice = createSlice({
 });
 
 export const {
+  updateFamilyDetails,
   setFormData,
   setIsDataFetched,
   setDataExist,
@@ -69,7 +74,7 @@ export const fetchFamilyDetails = () => async (dispatch) => {
   }
 };
 
-export const submitFamilyDetails = (formData, dataExist) => async (dispatch) => {
+export const submitFamilyDetails = (formData, dataExist, setFamilyFormSubmit) => async (dispatch) => {
   try {
     dispatch(setLoading(true));
     const endpoint = dataExist
@@ -80,6 +85,7 @@ export const submitFamilyDetails = (formData, dataExist) => async (dispatch) => 
     dispatch(setSubmitMessage(
       dataExist ? "Form updated successfully!" : "Form submitted successfully!"
     ));
+    setFamilyFormSubmit(true);
     dispatch(setLoading(false));
     return response;
   } catch (error) {

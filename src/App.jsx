@@ -21,6 +21,7 @@ import ResultPage from "./components/ResultPage";
 import FormDetailPage from "./components/FormDetailPage";
 import PaymentSuccessMessage from "./components/PaymentSuccessMessage";
 import Spinner from "./api/Spinner";
+import Payment from "./components/Payment"
 
 function App() {
   return (
@@ -61,6 +62,7 @@ function App() {
                 path="/resultDetails"
                 element={<PrivateRoute component={ResultPage} />}
               />
+              <Route path="/payment" element={<Payment />} />
               <Route
                 path="/payment/success/:payment_id"
                 element={<PrivateRoute component={PaymentSuccessMessage} />}

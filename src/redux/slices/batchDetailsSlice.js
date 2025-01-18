@@ -8,11 +8,12 @@ export const fetchBatchDetails = createAsyncThunk(
     try {
       const response = await axios.get("/form/batchRelatedDetails/getForm");
       const data = response.data;
+      console.log("BatchDetails Form Data", data[0]);
       if (data.length > 0) {
         return {
           dataExist: true,
           formData: {
-            preferredBatch: data[0]?.preferredBatch || "",
+            preferredBatch: data[0]?.preferredBatch ,
             subjectCombination: data[0]?.subjectCombination || "",
             classForAdmission: data[0]?.classForAdmission || "",
           },

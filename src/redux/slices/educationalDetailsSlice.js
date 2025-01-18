@@ -44,7 +44,10 @@ export const fetchBoards = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get("/board");
-      return response.data;
+      console.log("boards response data", response);
+      return {
+        boards: response.data
+      }
       
     } catch (error) {
       return rejectWithValue(error.response?.data || "Failed to fetch boards");
@@ -108,7 +111,7 @@ const educationalDetailsSlice = createSlice({
       })
       .addCase(fetchBoards.fulfilled, (state, action) => {
         state.loading = false;
-        state.boards = action.payload;
+        state.boards = action.payload.boards;
       })
       .addCase(fetchBoards.rejected, (state, action) => {
         state.loading = false;

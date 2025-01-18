@@ -32,7 +32,6 @@ const BasicDetailsForm = () => {
   const { formData: batchFormData, dataExist: batchFormDataExist } =
     useSelector((state) => state.batchDetails);
 
-
   const [checkUrl, setCheckUrl] = useState(false);
   const [errors, setErrors] = useState({});
   const [submitMessage, setSubmitMessage] = useState("");
@@ -94,14 +93,10 @@ const BasicDetailsForm = () => {
     let isValid = true;
 
     Object.keys(batchFormData).forEach((key) => {
-      // if (
-      //   !(key === "subjectCombination" && batchFormData.classForAdmission <= 10)
-      // ) {
       if (!batchFormData[key]?.toString().trim()) {
         formErrors[key] = `${key.replace(/([A-Z])/g, " $1")} is required`;
         isValid = false;
       }
-      // }
     });
 
     setErrors(formErrors);
@@ -148,7 +143,7 @@ const BasicDetailsForm = () => {
         );
 
         if (checkUrl) {
-          navigate("/familyDetailsForm");
+          navigate("/educationalDetailsForm");
         }
       } catch (error) {
         console.error("Error submitting form:", error);
@@ -214,8 +209,8 @@ const BasicDetailsForm = () => {
 
         <div className="flex flex-col col-span-6 ">
           {/* <div className=" pr-8 flex gap-12 justify-between items-center"> */}
-            <Navbar />
-           
+          <Navbar />
+
           {/* </div> */}
 
           <div
