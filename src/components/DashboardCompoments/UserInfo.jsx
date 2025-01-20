@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import { use } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUserDetails } from "../redux/slices/userDeailsSlice";
-import { fetchBatchDetails } from "../redux/slices/batchDetailsSlice";
-import { fetchBasicDetails } from "../redux/slices/basicDetailsSlice";
+import { fetchUserDetails } from "../../redux/slices/userDeailsSlice";
+import { fetchBatchDetails } from "../../redux/slices/batchDetailsSlice";
+import { fetchBasicDetails } from "../../redux/slices/basicDetailsSlice";
 
 const UserInfo = () => {
   const dispatch = useDispatch();

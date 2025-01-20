@@ -21,6 +21,8 @@ export default function LoginRight() {
     password: "",
   });
 
+  const [showErrorMessage, setShowErrorMessage] = useState("");
+
   
   const [submitMessage, setSubmitMessage] = useState("");
   // const [loading, setLoading] = useState(false);
@@ -70,10 +72,12 @@ export default function LoginRight() {
         document.cookie = `token=${response.data.token}`;
         navigate("/dashboard");
       } catch (error) {
-        setSubmitMessage(error.response?.data || "An error occurred");
-        console.error("Error logging in", error);
+        setSubmitMessage(error?.response?.data || "An error occurred");
+
+        console.log("Error logging in", error.response.data);
       } finally {
-        // setLoading(false);
+        dispatch(setLoading(false));
+
       }
     }
   };
@@ -127,11 +131,12 @@ export default function LoginRight() {
         {submitMessage && (
           <p
             className={`text-center text-sm ${
-              submitMessage.includes("successful")
+              submitMessage.includes("Login successful!")
                 ? "text-green-500"
                 : "text-red-500"
             }`}
           >
+            {console.log("Submitmessage running")}
             {submitMessage}
           </p>
         )}
@@ -162,6 +167,10 @@ export default function LoginRight() {
           </button>
         </div>
       </form>
+
+  {/* const [showErrorMessage, setShowErrorMessage] = useState("");
+      {showErrorMessage && } */}
+
     </div>
   );
 }

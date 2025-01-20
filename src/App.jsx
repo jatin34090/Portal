@@ -33,15 +33,11 @@ function App() {
               <Route path="/" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route
-                path="/educationalDetailsForm"
+                path="/registration/educationalDetailsForm"
                 element={< EducationalDetailsForm />}
               />
-              <Route path="/familyDetailsForm" element={<FamilyDetails />} />
-              <Route path="/basicDetailsForm" element={<BasicDetailsForm />} />
-              <Route
-                path="/batchDetailsForm"
-                element={<BatchRelatedDetails />}
-              />
+              <Route path="/registration/basicDetailsForm" element={<BasicDetailsForm />} />
+             
               <Route
                 path="/dashboard"
                 element={<PrivateRoute component={Dashboard} />}

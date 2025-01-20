@@ -1,8 +1,50 @@
+import { useDispatch, useSelector } from "react-redux";
 import axios from "../api/axios";
 import Sidebar from "./Sidebar";
+import { useEffect, useState } from "react";
+import { fetchEducationalDetails } from "../redux/slices/educationalDetailsSlice";
+import { fetchFamilyDetails } from "../redux/slices/familyDetailsSlice";
+import { fetchBasicDetails } from "../redux/slices/basicDetailsSlice";
+import { fetchBatchDetails } from "../redux/slices/batchDetailsSlice";
+import AllFormNotAvailable from "./AllFormNotAvailable";
 
 const payment = () => {
+  const dispatch = useDispatch();
+
+  const [allFormNotAvailable, setAllFormNotAvailable] = useState(false);
+
+  const { dataExist: basicDetailsDataExist } = useSelector(
+    (state) => state.basicDetails
+  );
+  const { dataExist: batchDetailsDataExist } = useSelector(
+    (state) => state.batchDetails
+  );
+  const { dataExist: educationalDetailsDataExist } = useSelector(
+    (state) => state.educationalDetails
+  );
+  const { dataExist: familyDetailsDataExist } = useSelector(
+    (state) => state.familyDetails
+  );
+
+  useEffect(() => {
+    dispatch(fetchBasicDetails());
+    dispatch(fetchBatchDetails());
+    dispatch(fetchEducationalDetails());
+    dispatch(fetchFamilyDetails());
+  }, [dispatch]);
+
   const checkoutHandler = async () => {
+    if (
+      !basicDetailsDataExist ||
+      !batchDetailsDataExist ||
+      !educationalDetailsDataExist ||
+      !familyDetailsDataExist
+    ) {
+      setAllFormNotAvailable(true);
+      // alert("Please fill all the details first");
+      return;
+
+    }
     const {
       data: { key },
     } = await axios.get("/payment/getKey");
@@ -53,11 +95,17 @@ const payment = () => {
   return (
     <div className="grid grid-cols-7 h-screen">
       <div className="col-span-1">
-        <Sidebar/>
+        <Sidebar />
       </div>
 
       <div className="col-span-6 flex items-center justify-center">
-        <div className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={checkoutHandler}>payment</div>
+        <div
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          onClick={checkoutHandler}
+        >
+          payment
+        </div>
+      {allFormNotAvailable && <AllFormNotAvailable setAllFormNotAvailable={setAllFormNotAvailable} familyDetailsDataExist={familyDetailsDataExist} educationalDetailsDataExist={educationalDetailsDataExist} batchDetailsDataExist={batchDetailsDataExist} basicDetailsDataExist={basicDetailsDataExist}/>}
       </div>
     </div>
   );

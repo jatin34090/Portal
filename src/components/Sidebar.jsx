@@ -7,14 +7,19 @@ import PaymentLightMode from "../assets/PaymentLightMode.png";
 import RegistrationDarkMode from "../assets/RegistrationDarkMode.png";
 import RegistrationLightMode from "../assets/RegistrationLightMode.png";
 import LogoutLightMode from "../assets/LogoutLightMode.png";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const handleLogout = async () => {
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    navigate("/");
+  }
 
   return (
     <div
-      className="flex flex-col justify-between h-screen pt-9"
+      className="flex flex-col justify-between h-screen pt-4"
       style={{ backgroundColor: "#c61d23" }}
     >
       <div className=" flex flex-col gap-8">
@@ -60,9 +65,9 @@ const Sidebar = () => {
           <h4>Payment Info</h4>
         </Link>
         <Link
-          to={"/basicDetailsForm"}
+          to={"/registration/basicDetailsForm"}
           className={`flex gap-3 rounded-l-full ml-16 p-3 ${
-            location.pathname === "/basicDetailsForm"
+            location.pathname.includes("/registration")
               ? "text-red-600 bg-white "
               : "text-white"
           } `}
@@ -79,7 +84,9 @@ const Sidebar = () => {
         </Link>
       </div>
 
-      <div className={`flex gap-3  ml-16 mb-9 text-white `}>
+      <div className={`flex gap-3  ml-16 mb-9 text-white cursor-pointer `}
+      onClick={handleLogout}
+      >
         <img src={LogoutLightMode} alt="" />
         <h4>Logout</h4>
       </div>

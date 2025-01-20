@@ -78,7 +78,7 @@ export default function SignupRight() {
         const response = await axios.post("/auth/student_signup", formData);
         setSubmitMessage("Form submitted successfully!");
         document.cookie = `token=${response.data.token}`;
-        navigate("/basicDetailsForm");
+        navigate("/registration/basicDetailsForm");
       } catch (error) {
         console.log("Error submitting form 2", error.response.data);
         setSubmitMessage(error.response.data);

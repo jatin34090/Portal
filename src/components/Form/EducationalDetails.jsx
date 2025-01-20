@@ -177,10 +177,11 @@ const EducationalDetailsForm = () => {
     if (isFamilyValid) {
       console.log("familyFormData", familyFormData);
       dispatch(
-        submitFamilyDetails(
+        submitFamilyDetails({
           familyFormData,
           familyDataExist,
           setFamilyFormSubmit
+        }
         )
       );
 

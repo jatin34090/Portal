@@ -11,10 +11,10 @@ import { useSelector } from "react-redux";
 import Spinner from "../api/Spinner"; // Assuming Spinner is a spinner component
 import Sidebar from "./Sidebar";
 import Navbar from "./Form/Navbar";
-import UserInfo from "./UserInfo";
-import UserDetail from "./LoginSugnup/UserDetail";
-import DailyNotice from "./DailyNotice";
-import Scholarship from "./Scholarship";
+import UserInfo from "./DashboardCompoments/UserInfo";
+import UserDetail from "./DashboardCompoments/UserDetail";
+import DailyNotice from "./DashboardCompoments/DailyNotice";
+import Scholarship from "./DashboardCompoments/Scholarship";
 
 const Dashboard = () => {
   // Fetch user details from Redux state

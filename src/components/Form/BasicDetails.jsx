@@ -199,10 +199,10 @@ const BasicDetailsForm = () => {
 
   return (
     <div
-      className="w-full h-screen overflow-auto "
+      className=" overflow-auto w-full h-screen"
       style={{ backgroundColor: "#c61d23" }}
     >
-      <div className="grid grid-cols-7 ">
+      <div className="grid grid-cols-7 w-full h-screen">
         <div className="col-span-1">
           <Sidebar />
         </div>
@@ -214,7 +214,7 @@ const BasicDetailsForm = () => {
           {/* </div> */}
 
           <div
-            className={`col-span-6 px-9 py-4  mb-3 mr-5 bg-gray-200 rounded-3xl flex flex-col items-end gap-4  overflow-auto`}
+            className={`col-span-6 px-9 py-4  mb-3 mr-5 bg-gray-200 rounded-3xl flex flex-col items-end gap-4 h-4/5 overflow-auto`}
           >
             {
               // loading ? (
