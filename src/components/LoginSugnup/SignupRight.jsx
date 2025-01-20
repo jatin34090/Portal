@@ -152,7 +152,7 @@ export default function SignupRight() {
           style={{ backgroundColor: "#c61d23" }}
         />
         {errors.name && (
-          <p className="text-red-500 text-xs">{errors.name}</p>
+          <p className="text-white text-xs">{errors.name}</p>
         )}
       </div>
 
@@ -169,7 +169,7 @@ export default function SignupRight() {
           style={{ backgroundColor: "#c61d23" }}
         />
         {errors.email && (
-          <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+          <p className="text-white text-xs mt-1">{errors.email}</p>
         )}
       </div>
 
@@ -187,7 +187,7 @@ export default function SignupRight() {
             style={{ backgroundColor: "#c61d23" }}
           />
           {errors.phone && (
-            <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
+            <p className="text-white text-xs mt-1">{errors.phone}</p>
           )}
         </div>
       </div>
@@ -259,7 +259,7 @@ export default function SignupRight() {
           </div>
         </div>
             {errors.password && (
-              <p className="text-red-500 text-xs">{errors.password}</p>
+              <p className="text-white text-xs">{errors.password}</p>
             )}
       </div>
 

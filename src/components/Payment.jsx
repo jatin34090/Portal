@@ -56,6 +56,7 @@ const payment = () => {
     console.log("response.data.order.currency", response.data.order.currency);
     console.log("response.data.currency", response.data.currency);
 
+
     const options = {
       key,
       amount: response.data.order.amount,
@@ -78,7 +79,7 @@ const payment = () => {
         // Optionally, verify the payment on your backend
 
         // Redirect to the success page
-        window.location.href = `http://localhost:5173/payment/success/${response.razorpay_order_id}`;
+        window.location.href = `${import.meta.env.VITE_APP_API_URL}/payment/success/${response.razorpay_order_id}`;
       },
     };
 

@@ -6,6 +6,7 @@ import ScholarsDenLogo from "../../assets/scholarsDenLogo.png";
 import Spinner from "../../api/Spinner"; // Adjust the path as needed
 import { setLoading } from "../../redux/slices/loadingSlice";
 import { useDispatch } from "react-redux";
+import ErrorMessage from "../ErrorMessage";
 
 export default function LoginRight() {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ export default function LoginRight() {
     password: "",
   });
 
-  const [showErrorMessage, setShowErrorMessage] = useState("");
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
 
   
   const [submitMessage, setSubmitMessage] = useState("");
@@ -61,7 +62,7 @@ export default function LoginRight() {
 
   const onSubmit = async (e) => {
 
-    dispatch(setLoading(true));
+    // dispatch(setLoading(true));
     e.preventDefault();
     if (validateForm()) {
       // setLoading(true);
@@ -72,11 +73,14 @@ export default function LoginRight() {
         document.cookie = `token=${response.data.token}`;
         navigate("/dashboard");
       } catch (error) {
+                // dispatch(setLoading(false));
+
         setSubmitMessage(error?.response?.data || "An error occurred");
+        setShowErrorMessage(true);
 
         console.log("Error logging in", error.response.data);
       } finally {
-        dispatch(setLoading(false));
+        // dispatch(setLoading(false));
 
       }
     }
@@ -108,7 +112,7 @@ export default function LoginRight() {
             style={{ backgroundColor: "#c61d23" }}
           />
           {errors.email && (
-            <p className="text-red-500 text-sm">{errors.email}</p>
+            <p className="text-white text-sm">{errors.email}</p>
           )}
         </div>
 
@@ -124,7 +128,7 @@ export default function LoginRight() {
             style={{ backgroundColor: "#c61d23" }}
           />
           {errors.password && (
-            <p className="text-red-500 text-sm">{errors.password}</p>
+            <p className="text-white text-sm">{errors.password}</p>
           )}
         </div>
 
@@ -133,7 +137,7 @@ export default function LoginRight() {
             className={`text-center text-sm ${
               submitMessage.includes("Login successful!")
                 ? "text-green-500"
-                : "text-red-500"
+                : "text-white"
             }`}
           >
             {console.log("Submitmessage running")}
@@ -168,8 +172,7 @@ export default function LoginRight() {
         </div>
       </form>
 
-  {/* const [showErrorMessage, setShowErrorMessage] = useState("");
-      {showErrorMessage && } */}
+      {/* {showErrorMessage && <ErrorMessage message={submitMessage} closeErrorPopup={setShowErrorMessage} /> }  */}
 
     </div>
   );
