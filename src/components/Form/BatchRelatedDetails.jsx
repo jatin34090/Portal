@@ -165,7 +165,7 @@ const BatchRelatedDetailsForm = () => {
               placeholder="Select Class for adminssion"
               className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
             >
-              <option className="text-gray-200" disabled value="">
+              <option className="" disabled value="">
                 Select Class for admission
               </option>
               {Array.from({ length: 7 }, (_, i) => i + 6).map((classNum) => (

@@ -18,7 +18,7 @@ const ScholarshipDetails = ({ setViewScholarship }) => {
         </div>
         <div className="p-6 text-black">
           <p className="text-center text-gray-500">
-            No user details available.
+            No Scholarship details available.
           </p>
         </div>
       </div>

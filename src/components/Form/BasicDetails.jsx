@@ -22,6 +22,9 @@ const BasicDetailsForm = () => {
   const dispatch = useDispatch();
   const location = useLocation();
 
+  const [basicDetailsError, setBasicDetailsError] = useState("");
+  const [batchDetailsError, setBatchDetailsError] = useState("");
+
   const {
     data: basicFormData,
     loading,
@@ -58,6 +61,7 @@ const BasicDetailsForm = () => {
 
     ["dob", "gender", "examName", "examDate"].forEach((field) => {
       if (!basicFormData?.[field]?.trim()) {
+        console.log("basicDetails Changes", basicFormData[field]);
         formErrors[field] = `${field
           .replace(/([A-Z])/g, " $1")
           .toUpperCase()} is required.`;
@@ -65,7 +69,7 @@ const BasicDetailsForm = () => {
       }
     });
 
-    setErrors(formErrors);
+    setBasicDetailsError(formErrors);
     return isValid;
   };
 
@@ -99,57 +103,62 @@ const BasicDetailsForm = () => {
       }
     });
 
-    setErrors(formErrors);
+    setBatchDetailsError(formErrors);
     return isValid;
+  };
+
+  const addAndUpdateBasicFrom = async () => {
+    try {
+      const url = batchFormDataExist
+        ? "/form/batchRelatedDetails/updateForm"
+        : "/form/batchRelatedDetails/addForm";
+      const method = batchFormDataExist ? axios.patch : axios.post;
+
+      await method(url, batchFormData);
+
+      setSubmitMessage(
+        batchFormDataExist
+          ? "Batch related details updated successfully!"
+          : "Batch related details submitted successfully!"
+      );
+
+      if (checkUrl) {
+        navigate("/educationalDetailsForm");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      setSubmitMessage("Error submitting form. Please try again.");
+    }
+  };
+
+  const addAndUpdatebatchForm = async () => {
+    try {
+      const url = basicFormDataExist
+        ? "/form/basicDetails/updateForm"
+        : "/form/basicDetails/addForm";
+      const method = basicFormDataExist ? axios.patch : axios.post;
+
+      await method(url, basicFormData);
+      setSubmitMessage(
+        basicFormDataExist
+          ? "Basic details updated successfully!"
+          : "Basic details submitted successfully!"
+      );
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      setSubmitMessage("Error submitting form. Please try again.");
+    }
   };
 
   const onSubmit = async (e) => {
     setLoading(true);
     e.preventDefault();
 
-    if (validateBasicForm()) {
-      try {
-        const url = basicFormDataExist
-          ? "/form/basicDetails/updateForm"
-          : "/form/basicDetails/addForm";
-        const method = basicFormDataExist ? axios.patch : axios.post;
-
-        await method(url, basicFormData);
-        setSubmitMessage(
-          basicFormDataExist
-            ? "Basic details updated successfully!"
-            : "Basic details submitted successfully!"
-        );
-      } catch (error) {
-        console.error("Error submitting form:", error);
-        setSubmitMessage("Error submitting form. Please try again.");
-      } finally {
-        setLoading(false);
-      }
+    if (validateBasicForm() && validateBatchForm()) {
+      await addAndUpdatebatchForm();
+      await addAndUpdateBasicFrom();
     }
-    if (validateBatchForm()) {
-      try {
-        const url = batchFormDataExist
-          ? "/form/batchRelatedDetails/updateForm"
-          : "/form/batchRelatedDetails/addForm";
-        const method = batchFormDataExist ? axios.patch : axios.post;
-
-        await method(url, batchFormData);
-
-        setSubmitMessage(
-          batchFormDataExist
-            ? "Batch related details updated successfully!"
-            : "Batch related details submitted successfully!"
-        );
-
-        if (checkUrl) {
-          navigate("/educationalDetailsForm");
-        }
-      } catch (error) {
-        console.error("Error submitting form:", error);
-        setSubmitMessage("Error submitting form. Please try again.");
-      }
-    }
+    
   };
 
   const pathLocation = location.pathname;
@@ -255,9 +264,9 @@ const BasicDetailsForm = () => {
                         max={new Date().toISOString().split("T")[0]}
                         className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
                       />
-                      {errors.dob && (
+                      {basicDetailsError.dob && (
                         <p className="text-red-500 text-xs mt-1">
-                          {errors.dob}
+                          {basicDetailsError.dob}
                         </p>
                       )}
                     </div>
@@ -277,16 +286,16 @@ const BasicDetailsForm = () => {
                         onChange={basicFormHandleChange}
                         className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
                       >
-                        <option value="">Select Gender</option>
+                        <option value="" disabled>Select Gender</option>
                         {genderOptions.map((option, index) => (
                           <option key={index} value={option}>
                             {option}
                           </option>
                         ))}
                       </select>
-                      {errors.gender && (
+                      {basicDetailsError.gender && (
                         <p className="text-red-500 text-xs mt-1">
-                          {errors.gender}
+                          {basicDetailsError.gender}
                         </p>
                       )}
                     </div>
@@ -306,16 +315,16 @@ const BasicDetailsForm = () => {
                         onChange={basicFormHandleChange}
                         className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
                       >
-                        <option value="">Select Exam Name</option>
+                        <option value="" disabled>Select Exam Name</option>
                         {examNameOptions.map((option, index) => (
                           <option key={index} value={option}>
                             {option}
                           </option>
                         ))}
                       </select>
-                      {errors.examName && (
+                      {basicDetailsError.examName && (
                         <p className="text-red-500 text-xs mt-1">
-                          {errors.examName}
+                          {basicDetailsError.examName}
                         </p>
                       )}
                     </div>
@@ -335,16 +344,16 @@ const BasicDetailsForm = () => {
                         onChange={basicFormHandleChange}
                         className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
                       >
-                        <option value="">Select Exam Date</option>
+                        <option value="" disabled>Select Exam Date</option>
                         {examDateOptions.map((option, index) => (
                           <option key={index} value={option}>
                             {option}
                           </option>
                         ))}
                       </select>
-                      {errors.examDate && (
+                      {basicDetailsError.examDate && (
                         <p className="text-red-500 text-xs mt-1">
-                          {errors.examDate}
+                          {basicDetailsError.examDate}
                         </p>
                       )}
                     </div>
@@ -360,7 +369,7 @@ const BasicDetailsForm = () => {
                     Batch Details
                   </h1>
                   <form
-                    className="flex flex-wrap gap-4  w-full bg-white shadow-lg p-2 rounded-b-2xl "
+                    className="flex flex-wrap  gap-4  w-full bg-white shadow-lg p-2 rounded-b-2xl "
                     onSubmit={onSubmit}
                   >
                     {/* <div className=" "> */}
@@ -380,7 +389,7 @@ const BasicDetailsForm = () => {
                         placeholder="Select Class for adminssion"
                         className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
                       >
-                        <option className="text-gray-200" disabled value="">
+                        <option className="" disabled value="">
                           Select Class for admission
                         </option>
                         {Array.from({ length: 7 }, (_, i) => i + 6).map(
@@ -394,9 +403,9 @@ const BasicDetailsForm = () => {
                           )
                         )}
                       </select>
-                      {errors.classForAdmission && (
+                      {batchDetailsError.classForAdmission && (
                         <p className="text-red-500 text-xs mt-1">
-                          {errors.classForAdmission}
+                          {batchDetailsError.classForAdmission}
                         </p>
                       )}
                     </div>
@@ -425,9 +434,9 @@ const BasicDetailsForm = () => {
                           </option>
                         ))}
                       </select>
-                      {errors.preferredBatch && (
+                      {batchDetailsError.preferredBatch && (
                         <p className="text-red-500 text-xs mt-1">
-                          {errors.preferredBatch}
+                          {batchDetailsError.preferredBatch}
                         </p>
                       )}
                     </div>
@@ -459,9 +468,9 @@ const BasicDetailsForm = () => {
                             </option>
                           ))}
                       </select>
-                      {errors.subjectCombination && (
+                      {batchDetailsError.subjectCombination && (
                         <p className="text-red-500 text-xs mt-1">
-                          {errors.subjectCombination}
+                          {batchDetailsError.subjectCombination}
                         </p>
                       )}
                     </div>

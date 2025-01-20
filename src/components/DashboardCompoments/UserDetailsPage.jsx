@@ -41,13 +41,34 @@ const UserDetailsPage = ({ setUserDetailShow }) => {
               </div>
               <div className="flex justify-between border-b pb-2">
                 <span className="font-semibold">Admit Card:</span>
-                <span>{userDetails.admitCard || "N/A"}</span>
-              </div>
+                {AdmitCard && (
+                  <a
+                    href={userDetails.admitCard} // Link to the PDF
+                    download="AdmitCard.pdf" // Suggest a default filename
+                    target="_blank" // Open in a new tab
+                    rel="noopener noreferrer" // Security best practice
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                    style={{ backgroundColor: "#c61d23" }}
+                  >
+                    Download Your Admit Card
+                  </a>
+                )}
+                <a
+                  href={userDetails.admitCard} // Link to the PDF
+                  download="AdmitCard.pdf" // Suggest a default filename
+                  target="_blank" // Open in a new tab
+                  rel="noopener noreferrer" // Security best practice
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                  style={{ backgroundColor: "#c61d23" }}
+                >
+                  Download Your Admit Card
+                </a>
+              </div> 
               <div className="flex justify-between border-b pb-2">
                 <span className="font-semibold">Email:</span>
                 <span>{userDetails.email || "N/A"}</span>
               </div>
-             
+
               <div className="flex justify-between border-b pb-2">
                 <span className="font-semibold">Payment ID:</span>
                 <span>{userDetails.paymentId || "N/A"}</span>
@@ -58,11 +79,25 @@ const UserDetailsPage = ({ setUserDetailShow }) => {
               </div>
               <div className="flex justify-between border-b pb-2">
                 <span className="font-semibold">Result:</span>
-                <span>{userDetails.result || "N/A"}</span>
+
+                {userDetails.AdmitCard}
+                <a
+                  href={userDetails.admitCard}
+                  download="ReportCard.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                  style={{ backgroundColor: "#c61d23" }}
+                >
+                  Download Your Report Card
+                </a>
+                {/* <span>{userDetails.result || "N/A"}</span> */}
               </div>
             </div>
           ) : (
-            <p className="text-center text-gray-500">No user details available.</p>
+            <p className="text-center text-gray-500">
+              No user details available.
+            </p>
           )}
         </div>
       </div>

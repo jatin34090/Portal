@@ -256,7 +256,7 @@ const EducationalDetailsForm = () => {
           onChange={handleChange}
           className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none w-full"
         >
-          <option value="">{`Select ${key.replace(/([A-Z])/g, " $1")}`}</option>
+          <option value="" disabled >{`Select ${key.replace(/([A-Z])/g, " $1")}`}</option>
           {options.map((option) => (
             <option key={option} value={option}>
               {option}

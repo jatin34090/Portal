@@ -22,6 +22,7 @@ import FormDetailPage from "./components/FormDetailPage";
 import PaymentSuccessMessage from "./components/PaymentSuccessMessage";
 import Spinner from "./api/Spinner";
 import Payment from "./components/Payment"
+import Result from "./components/Result";
 
 function App() {
   return (
@@ -49,7 +50,7 @@ function App() {
                 path="/reset-password/:token"
                 element={<ResetPassword />}
               />
-              <Route path="result" element={<ResultPage />} />
+              {/* <Route path="result" element={<ResultPage />} /> */}
               <Route
                 path="/FormDetailPage"
                 element={<PrivateRoute component={FormDetailPage} />}
@@ -63,6 +64,7 @@ function App() {
                 path="/payment/success/:payment_id"
                 element={<PrivateRoute component={PaymentSuccessMessage} />}
               />
+              <Route path="/result" element={<PrivateRoute component={Result}/>} />
             </Routes>
           </div>
         </Router>

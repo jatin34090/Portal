@@ -15,7 +15,7 @@ const Scholarship = () => {
         <button className="py-2 px-10 text-white font-semibold rounded-full " onClick={()=>setViewScholarship(true) } style={{ backgroundColor: "#c61d23" }}>View</button>
       </div>
       <div className="flex justify-end p-7">
-        <img src={Scholarsship} alt="" />
+        <img className="" src={Scholarsship} alt="" />
       </div>
       {viewScholarship && <ScholarshipDetails setViewScholarship={setViewScholarship} />}
     </div>

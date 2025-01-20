@@ -19,7 +19,7 @@ const Sidebar = () => {
 
   return (
     <div
-      className="flex flex-col justify-between h-screen pt-4"
+      className="flex flex-col justify-between h-screen pt-4 md:w-full"
       style={{ backgroundColor: "#c61d23" }}
     >
       <div className=" flex flex-col gap-8">
@@ -81,6 +81,25 @@ const Sidebar = () => {
             alt=""
           />
           <h4>Registration</h4>
+        </Link>
+        <Link
+          to={"/result"}
+          className={`flex gap-3 rounded-l-full ml-16 p-3 ${
+            location.pathname.includes("/result")
+              ? "text-red-600 bg-white "
+              : "text-white"
+          } `}
+        >
+          <img
+            src={
+              location.pathname === "/result"
+                ? RegistrationDarkMode
+                : RegistrationLightMode
+            }
+            alt=""
+          />
+          <h4>Result</h4>
+          
         </Link>
       </div>
 
