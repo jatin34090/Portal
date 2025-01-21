@@ -1,3 +1,4 @@
+import { use } from "react";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 
@@ -41,7 +42,7 @@ const UserDetailsPage = ({ setUserDetailShow }) => {
               </div>
               <div className="flex justify-between border-b pb-2">
                 <span className="font-semibold">Admit Card:</span>
-                {AdmitCard && (
+                {userDetails.admitCard ? (
                   <a
                     href={userDetails.admitCard} // Link to the PDF
                     download="AdmitCard.pdf" // Suggest a default filename
@@ -52,18 +53,10 @@ const UserDetailsPage = ({ setUserDetailShow }) => {
                   >
                     Download Your Admit Card
                   </a>
+                ) : (
+                  <span>N/A</span>
                 )}
-                <a
-                  href={userDetails.admitCard} // Link to the PDF
-                  download="AdmitCard.pdf" // Suggest a default filename
-                  target="_blank" // Open in a new tab
-                  rel="noopener noreferrer" // Security best practice
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                  style={{ backgroundColor: "#c61d23" }}
-                >
-                  Download Your Admit Card
-                </a>
-              </div> 
+              </div>
               <div className="flex justify-between border-b pb-2">
                 <span className="font-semibold">Email:</span>
                 <span>{userDetails.email || "N/A"}</span>
@@ -80,17 +73,20 @@ const UserDetailsPage = ({ setUserDetailShow }) => {
               <div className="flex justify-between border-b pb-2">
                 <span className="font-semibold">Result:</span>
 
-                {userDetails.AdmitCard}
-                <a
-                  href={userDetails.admitCard}
-                  download="ReportCard.pdf"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                  style={{ backgroundColor: "#c61d23" }}
-                >
-                  Download Your Report Card
-                </a>
+                {userDetails?.result ? (
+                  <a
+                    href={userDetails?.result}
+                    download="ReportCard.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                    style={{ backgroundColor: "#c61d23" }}
+                  >
+                    Download Your Report Card
+                  </a>
+                ) : (
+                  <span>N/A</span>
+                )}
                 {/* <span>{userDetails.result || "N/A"}</span> */}
               </div>
             </div>
